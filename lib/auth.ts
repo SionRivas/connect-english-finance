@@ -2,10 +2,16 @@ import { Lucia, User, Session } from "lucia";
 import { LibSQLAdapter } from "@lucia-auth/adapter-sqlite";
 import { cache } from "react";
 
-import { GitHub } from "arctic";
+import { GitHub, Google } from "arctic";
 
 import { db } from "./db";
 import { cookies } from "next/headers";
+
+export const google = new Google(
+  process.env.GOOGLE_CLIENT_ID!,
+  process.env.GOOGLE_CLIENT_SECRET!,
+  "http://localhost:3000/login/google/callback"
+);
 
 export const github = new GitHub(
   process.env.GITHUB_CLIENT_ID!,

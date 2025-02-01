@@ -1,9 +1,12 @@
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import { Button, ButtonGroup } from "@heroui/button";
+import { button as buttonStyles } from "@heroui/theme";
+
 import { Link } from "@heroui/link";
 import { title, subtitle } from "@/components/primitives";
 
 import { Image } from "@heroui/image";
+import { siteConfig } from "@/config/site";
 
 export default async function Page() {
   return (
@@ -22,16 +25,18 @@ export default async function Page() {
           <p className={title()}>Connect English</p>
           <p>
             <span className={title()}> Monitor</span>
-            <span className={title({ color: "blue" })}> Financiero</span>
+            <span className={title({ color: "green" })}> Financiero</span>
           </p>
         </div>
         <div className={subtitle({ class: "m-0 p-0" })}>
           Inica sesión para continuar
         </div>
 
-        <Button as={Link} href="/login/github" color="primary" variant="shadow">
-          Acceder con Google
-        </Button>
+        <a href="/login/google">
+          <Button color="success" variant="shadow">
+            Acceder con Google
+          </Button>
+        </a>
       </Card>
     </>
   );
