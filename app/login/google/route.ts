@@ -1,4 +1,3 @@
-// app/login/github/route.ts
 import { generateCodeVerifier, generateState } from "arctic";
 import { github, google } from "../../../lib/auth";
 import { cookies } from "next/headers";

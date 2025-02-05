@@ -54,10 +54,160 @@ export const verifyExistingUser = async (
   }
 };
 
+export const createCurso = async (nombre: string, fechaDeInicio: number) => {
+  try {
+    let resp = await db.execute({
+      sql: `INSERT INTO Curso 
+        (nombre, fechaDeInicio)
+        VALUES
+        (:nombre, :fechaDeInicio)`,
+      args: {
+        nombre: nombre,
+        fechaDeInicio: fechaDeInicio,
+      },
+    });
+    return Number(resp.lastInsertRowid);
+  } catch (e) {
+    return e;
+  }
+};
+
+export const updateCurso = async (curso: Curso) => {
+  try {
+    await db.execute({
+      sql: `UPDATE Curso 
+        SET nombre = :nombre, fechaDeInicio = :fechaDeInicio, estado = :estado
+        WHERE id = :id`,
+      args: {
+        id: curso.id,
+        nombre: curso.nombre,
+        fechaDeInicio: curso.fechaDeInicio,
+        estado: curso.estado,
+      },
+    });
+    return true;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const deleteCurso = async (id: number) => {
+  try {
+    await db.execute({
+      sql: `DELETE FROM Curso WHERE id = :id`,
+      args: {
+        id: id,
+      },
+    });
+    return true;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getActiveCursos = async () => {
+  try {
+    const cursos = await db.execute({
+      sql: `
+        SELECT c.*, COUNT(a.id) as cantidadAlumnos 
+        FROM Curso c 
+        LEFT JOIN Alumno a ON c.id = a.id_curso 
+        WHERE c.estado = 1 
+        GROUP BY c.id`,
+      args: {},
+    });
+    return cursos.rows as any as Curso[];
+  } catch (e) {
+    return e;
+  }
+};
+export const getAllCursos = async () => {
+  try {
+    const cursos = await db.execute({
+      sql: `
+        SELECT c.*, COUNT(a.id) as cantidadAlumnos 
+        FROM Curso c 
+        LEFT JOIN Alumno a ON c.id = a.id_curso
+        GROUP BY c.id
+        ORDER BY c.id DESC`,
+      args: {},
+    });
+    return cursos.rows as any as Curso[];
+  } catch (e) {
+    return e;
+  }
+};
+export const getCursosPaginated = async (page: number, limit: number) => {
+  try {
+    const cursos = await db.execute({
+      sql: `
+        SELECT c.*, COUNT(a.id) as cantidadAlumnos 
+        FROM Curso c 
+        LEFT JOIN Alumno a ON c.id = a.id_curso
+        GROUP BY c.id
+        ORDER BY c.id DESC
+        LIMIT :limit OFFSET :offset`,
+      args: {
+        limit: limit,
+        offset: (page - 1) * limit,
+      },
+    });
+    return cursos.rows as any as Curso[];
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getCursosCount = async () => {
+  try {
+    const cursos = await db.execute({
+      sql: `SELECT COUNT(*) as count FROM Curso`,
+      args: {},
+    });
+    return cursos.rows[0].count as number;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getAllAlumnos = async () => {
+  try {
+    const alumnos = await db.execute({
+      sql: `SELECT * FROM Alumno`,
+      args: {},
+    });
+    return alumnos;
+  } catch (e) {
+    return e;
+  }
+};
+
 export interface DatabaseUser {
   id: string;
   username: string;
   email: string;
   github_id: string;
   google_id: string;
+}
+
+export interface Curso {
+  id: number;
+  nombre: string;
+  fechaDeInicio: number;
+  estado: boolean;
+  cantidadAlumnos: number;
+}
+export interface Alumno {
+  id: number;
+  nombre: string;
+  encargado: string;
+  estado: boolean;
+  numero_contacto_1: number;
+  numero_contacto_2: number;
+  numero_contacto_3: number;
+  mensualidad: number;
+  inscripcion: number;
+  fecha_registro: number;
+  id_curso: number;
+  dia_corte: number;
 }

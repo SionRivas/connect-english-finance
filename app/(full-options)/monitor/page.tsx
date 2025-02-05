@@ -9,7 +9,7 @@ export default async function AboutPage() {
   }
   return (
     <div>
-      <h1>Hi, {user.username}!</h1>;<h1 className={title()}>About</h1>
+      <h1 className={title()}>Monitor</h1>
     </div>
   );
 }

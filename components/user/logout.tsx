@@ -1,11 +1,14 @@
 import { lucia, validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-
+import { LogoutIcon } from "../icons";
+import { Button, ButtonGroup } from "@heroui/button";
 export default async function Page() {
   return (
-    <form action={logout}>
-      <button>Sign out</button>
+    <form action={logout} className="flex items-center justify-center ">
+      <Button isIconOnly size="sm" type="submit" color="success">
+        <LogoutIcon className="text-white" />
+      </Button>
     </form>
   );
 }
@@ -22,8 +25,7 @@ async function logout(): Promise<ActionResult> {
   await lucia.invalidateSession(session.id);
 
   const sessionCookie = lucia.createBlankSessionCookie();
-  const cookieStore = await cookies();
-  cookieStore.set(
+  (await cookies()).set(
     sessionCookie.name,
     sessionCookie.value,
     sessionCookie.attributes
