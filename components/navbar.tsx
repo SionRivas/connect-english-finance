@@ -105,7 +105,7 @@ export const Navbar = ({ username }: NavbarProps) => {
       </NavbarContent>
 
       <NavbarMenu>
-        <div className="mx-4 mt-2 flex h-full flex-col gap-2">
+        <div className="mx-4 mt-2 flex h-dvh flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
@@ -117,11 +117,9 @@ export const Navbar = ({ username }: NavbarProps) => {
               </Link>
             </NavbarMenuItem>
           ))}
-          <div className="mb-4 mt-auto">
-            <NavbarMenuItem className="">
-              <LogoutMin />
-            </NavbarMenuItem>
-          </div>
+          <NavbarMenuItem className="mb-4 mt-auto">
+            <LogoutMin />
+          </NavbarMenuItem>
         </div>
       </NavbarMenu>
     </HeroUINavbar>

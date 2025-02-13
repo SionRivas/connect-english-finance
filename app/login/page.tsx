@@ -7,6 +7,7 @@ import { NeonGradientCard } from '@/components/ui/neon-gradient-card';
 import { title, subtitle } from '@/components/primitives';
 
 import { GoogleIcon } from '@/components/icons';
+import { Link } from '@heroui/link';
 
 export default async function Page() {
   return (
@@ -36,17 +37,17 @@ export default async function Page() {
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
-          <a href="/login/google" className="">
-            <Button
-              color="success"
-              size="lg"
-              className="text-white"
-              variant="shadow"
-            >
-              Acceder con Google
-              <GoogleIcon />
-            </Button>
-          </a>
+          <Button
+            color="success"
+            size="lg"
+            as={'a'}
+            href="/login/google"
+            className="text-white"
+            variant="shadow"
+          >
+            Acceder con Google
+            <GoogleIcon />
+          </Button>
           <div className="text-sm font-light text-default-300">
             Inica sesión para continuar
           </div>
