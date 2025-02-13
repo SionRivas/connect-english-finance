@@ -146,7 +146,7 @@ export default function PanelMonitorGeneral({
           </div>
           <div className="order-first w-full max-w-md lg:order-none">
             <Card className="flex flex-col gap-5 p-7">
-              {/* <FinancialCard ingresos={ingresos} egresos={egresos} /> */}
+              <FinancialCard ingresos={ingresos} egresos={egresos} />
             </Card>
           </div>
         </div>
