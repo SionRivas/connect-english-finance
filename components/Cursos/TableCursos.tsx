@@ -59,7 +59,7 @@ export default function TableCursos({
     );
   };
   // URL de la API con paginación
-  const apiUrl = `http://localhost:3000/api/cursos/getPagination?page=${page}&limit=${pageSize}`;
+  const apiUrl = `/api/cursos/getPagination?page=${page}&limit=${pageSize}`;
 
   // Uso de SWR para traer los datos de la página actual, obtenemos también la función mutate
   const { data, error, isLoading, mutate } = useSWR<Curso[]>(apiUrl, fetcher);

@@ -20,6 +20,7 @@ import LogoutButton from '@/components/user/logout';
 import { siteConfig } from '@/config/site';
 import { ThemeSwitch } from '@/components/theme-switch';
 import { GithubIcon, SearchIcon } from '@/components/icons';
+import LogoutMin from './user/logoutMin';
 
 interface NavbarProps {
   username: string;
@@ -48,7 +49,7 @@ export const Navbar = ({ username }: NavbarProps) => {
   );
 
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky">
+    <HeroUINavbar maxWidth="xl" position="sticky" shouldHideOnScroll>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           <div>
@@ -104,25 +105,23 @@ export const Navbar = ({ username }: NavbarProps) => {
       </NavbarContent>
 
       <NavbarMenu>
-        {searchInput}
-        <div className="mx-4 mt-2 flex flex-col gap-2">
+        <div className="mx-4 mt-2 flex h-full flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
-                color={
-                  index === 2
-                    ? 'primary'
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? 'danger'
-                      : 'foreground'
-                }
-                href="#"
+                color={item.href === '/monitor' ? 'primary' : 'foreground'}
+                href={item.href}
                 size="lg"
               >
                 {item.label}
               </Link>
             </NavbarMenuItem>
           ))}
+          <div className="mb-4 mt-auto">
+            <NavbarMenuItem className="">
+              <LogoutMin />
+            </NavbarMenuItem>
+          </div>
         </div>
       </NavbarMenu>
     </HeroUINavbar>

@@ -51,7 +51,7 @@ export default function TableAlumnos({
   });
 
   // URL de la API con cursoId
-  const apiUrl = `http://localhost:3000/api/alumnos/getByCurso?cursoId=${cursoId}`;
+  const apiUrl = `/api/alumnos/getByCurso?cursoId=${cursoId}`;
 
   // Uso de SWR para traer los datos
   const { data, error, isLoading } = useSWR<Alumno[]>(apiUrl, fetcher);
