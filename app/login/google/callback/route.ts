@@ -45,12 +45,7 @@ export async function GET(request: Request): Promise<Response> {
       },
     );
 
-    console.log('llego1');
     const googleUser: GoogleUser = await googleUserResponse?.json();
-    console.log('llego2');
-
-    console.log(googleUser);
-
     const existingUser = await verifyExistingUser(null, null, googleUser.sub);
 
     if (existingUser) {

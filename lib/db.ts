@@ -1,5 +1,17 @@
 import { createClient } from '@libsql/client';
 
+export const getUsersWithIdAndUsername = async () => {
+  try {
+    const users = await db.execute({
+      sql: `SELECT id, username FROM user`,
+      args: {},
+    });
+    return users.rows as any as { id: string; username: string }[];
+  } catch (e) {
+    return e;
+  }
+};
+
 export const db = createClient({
   url: process.env.TURSO_DATABASE_URL ?? '',
   authToken: process.env.TURSO_AUTH_TOKEN ?? '',
@@ -391,6 +403,7 @@ export interface Transaccion {
   id_alumno: string | null;
   nombre_alumno: string | null;
   id_user: string;
+  user_name: string;
   tipo: number;
   categoria: string;
   monto: number;

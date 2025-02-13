@@ -11,7 +11,7 @@ export default async function Page() {
 async function logout(): Promise<void> {
   const { session } = await validateRequest();
   if (!session) {
-    redirect('/login');
+    redirect('/');
     return;
   }
 
@@ -23,5 +23,5 @@ async function logout(): Promise<void> {
     sessionCookie.value,
     sessionCookie.attributes,
   );
-  redirect('/login');
+  redirect('/');
 }

@@ -53,6 +53,16 @@ const FinancialCard = ({
           `$${val.toLocaleString()}`,
       },
     },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: '100%',
+          },
+        },
+      },
+    ],
   };
 
   return (
@@ -90,16 +100,31 @@ const FinancialCard = ({
           </div>
         </div>
 
-        <div className="">
+        <div className="chart-container">
           <Chart
             options={options}
             series={series}
             type="donut"
-            height={130}
-            width={130}
+            height="100%"
+            width="100%"
           />
         </div>
       </div>
+      <style jsx>{`
+        .chart-container {
+          width: 100%;
+          max-width: 150px;
+          height: 150px;
+          position: relative;
+        }
+        .chart-container > div {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+      `}</style>
     </div>
   );
 };

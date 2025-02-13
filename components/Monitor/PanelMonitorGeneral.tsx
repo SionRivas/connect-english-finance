@@ -12,6 +12,7 @@ import { TableExportIcon, TrendingDownIcon, TrendingUpIcon } from '../icons';
 import FinancialCard from './FinancialCard';
 import { CrearIngresoModal } from './CrearIngresoModal';
 import { CrearEgresoModal } from './CrearEgresoModal';
+import { InspeccionarTransaccionModal } from './InspeccionarTransaccionModal';
 import TableTransacciones from './TableTransacciones';
 import {
   today,
@@ -22,13 +23,22 @@ import {
   endOfMonth,
 } from '@internationalized/date';
 import { useLocale } from '@react-aria/i18n';
+import { Transaccion } from '@/lib/db';
 interface PanelMonitorProps {
   userId: string;
+  users: string;
 }
 
-export default function PanelMonitorGeneral({ userId }: PanelMonitorProps) {
+export default function PanelMonitorGeneral({
+  userId,
+  users,
+}: PanelMonitorProps) {
   const [isIngresoModalOpen, setIsIngresoModalOpen] = useState(false);
   const [isEgresoModalOpen, setIsEgresoModalOpen] = useState(false);
+  const [isInspeccionarModalOpen, setIsInspeccionarModalOpen] = useState(false);
+
+  const [selectedTransaccion, setSelectedTransaccion] =
+    useState<Transaccion | null>(null);
 
   const [ingresos, setIngresos] = useState(0);
   const [egresos, setEgresos] = useState(0);
@@ -116,8 +126,8 @@ export default function PanelMonitorGeneral({ userId }: PanelMonitorProps) {
             </ButtonGroup>
           </div>
         </div>
-        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
-          <div className="w-full md:col-span-2">
+        <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="w-full lg:col-span-2">
             <TableTransacciones
               startDate={value.start}
               endDate={value.end}
@@ -125,11 +135,18 @@ export default function PanelMonitorGeneral({ userId }: PanelMonitorProps) {
                 setIngresos(ingreso);
                 setEgresos(egreso);
               }}
+              onDelete={() => {}}
+              onEdit={() => {}}
+              onInspection={(transaccion: Transaccion) => {
+                setSelectedTransaccion(transaccion);
+                setIsInspeccionarModalOpen(true);
+                console.log(transaccion);
+              }}
             />
           </div>
-          <div className="w-full">
+          <div className="order-first w-full max-w-md lg:order-none">
             <Card className="flex flex-col gap-5 p-7">
-              <FinancialCard ingresos={ingresos} egresos={egresos} />
+              {/* <FinancialCard ingresos={ingresos} egresos={egresos} /> */}
             </Card>
           </div>
         </div>
@@ -145,6 +162,12 @@ export default function PanelMonitorGeneral({ userId }: PanelMonitorProps) {
         isOpen={isEgresoModalOpen}
         onClose={() => setIsEgresoModalOpen(false)}
         onCreate={() => setIsEgresoModalOpen(false)}
+      />
+      <InspeccionarTransaccionModal
+        users={users}
+        transaccion={selectedTransaccion}
+        isOpen={isInspeccionarModalOpen}
+        onClose={() => setIsInspeccionarModalOpen(false)}
       />
     </>
   );

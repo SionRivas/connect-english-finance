@@ -7,7 +7,7 @@ import TableCursos from '@/components/Cursos/TableCursos';
 export default async function CursosPage() {
   const { user } = await validateRequest();
   if (!user) {
-    return redirect('/login');
+    return redirect('/');
   }
 
   const cursosCount = (await getCursosCount()) as number;

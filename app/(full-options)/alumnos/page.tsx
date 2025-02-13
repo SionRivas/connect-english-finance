@@ -7,7 +7,7 @@ import PanelAlumnos from '@/components/Alumnos/PanelAlumnosGen';
 export default async function AlumnosPage() {
   const { user } = await validateRequest();
   if (!user) {
-    return redirect('/login');
+    return redirect('/');
   }
   const CursosActivos = JSON.stringify(await getActiveCursos());
   return (

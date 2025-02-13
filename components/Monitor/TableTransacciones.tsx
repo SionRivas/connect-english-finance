@@ -10,15 +10,25 @@ import {
   Chip,
   Spinner,
   CalendarDate,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
 } from '@heroui/react';
 import useSWR from 'swr';
 import { Transaccion } from '@/lib/db'; // Asegúrate de que la ruta sea la correcta
+import { DotsVertical } from '../icons';
 
 // Interfaz para las props de la tabla (en este ejemplo no requerimos props adicionales)
 interface TableTransaccionesProps {
   startDate: CalendarDate;
   endDate: CalendarDate;
   onUpdated: (ingreso: number, egreso: number) => void;
+
+  onEdit: (transaccion: Transaccion) => void;
+  onDelete: (transaccion: Transaccion) => void;
+  onInspection: (transaccion: Transaccion) => void;
 }
 
 // Interfaz para el descriptor de ordenamiento
@@ -33,6 +43,9 @@ export default function TableTransacciones({
   startDate,
   endDate,
   onUpdated,
+  onEdit,
+  onDelete,
+  onInspection,
 }: TableTransaccionesProps) {
   const fetcher = (url: string) =>
     fetch(url).then((res) =>
@@ -143,7 +156,50 @@ export default function TableTransacciones({
         case 'comentario':
           return transaccion.comentario ? transaccion.comentario : '-';
         case 'id_alumno':
-          return transaccion.nombre_alumno ? transaccion.nombre_alumno : '-';
+          return (
+            <div className="relative">
+              <span>
+                {transaccion.nombre_alumno ? transaccion.nombre_alumno : '-'}
+              </span>
+              <span className="absolute right-0 top-0 -mr-1 -mt-1">
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      className="opacity-15"
+                    >
+                      <DotsVertical />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu>
+                    <DropdownItem
+                      key="inspect"
+                      onPress={() => onInspection(transaccion)}
+                    >
+                      Inspeccionar
+                    </DropdownItem>
+
+                    <DropdownItem
+                      key="edit"
+                      onPress={() => onEdit(transaccion)}
+                    >
+                      Editar
+                    </DropdownItem>
+                    <DropdownItem
+                      key="delete"
+                      color="danger"
+                      className="text-danger"
+                      onPress={() => onDelete(transaccion)}
+                    >
+                      Eliminar
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </span>
+            </div>
+          );
         default:
           return cellValue !== null && cellValue !== undefined
             ? String(cellValue)
