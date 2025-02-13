@@ -38,7 +38,7 @@ export const CrearIngresoModal = ({
 
   useEffect(() => {
     // Obtener la lista de cursos activos
-    fetch('http://localhost:3000/api/cursos/getActive')
+    fetch('/api/cursos/getActive')
       .then((res) => res.json())
       .then((data) => setCursos(data))
       .catch((err) => setError(err.message));
@@ -47,9 +47,7 @@ export const CrearIngresoModal = ({
   useEffect(() => {
     if (selectedCurso) {
       // Obtener la lista de alumnos activos en el curso seleccionado
-      fetch(
-        `http://localhost:3000/api/alumnos/getActiveByCurso?cursoId=${selectedCurso}`,
-      )
+      fetch(`/api/alumnos/getActiveByCurso?cursoId=${selectedCurso}`)
         .then((res) => res.json())
         .then((data) => setAlumnos(data as Alumno[]))
         .catch((err) => setError(err.message));
