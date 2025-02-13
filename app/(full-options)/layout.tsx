@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/navbar";
 
 import { validateRequest } from "@/lib/auth";
-export default async function AboutLayout({
+export default async function GeneralLayout({
   children,
 }: {
   children: React.ReactNode;

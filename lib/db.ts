@@ -1,8 +1,8 @@
-import { createClient } from "@libsql/client";
+import { createClient } from '@libsql/client';
 
 export const db = createClient({
-  url: process.env.TURSO_DATABASE_URL ?? "",
-  authToken: process.env.TURSO_AUTH_TOKEN ?? "",
+  url: process.env.TURSO_DATABASE_URL ?? '',
+  authToken: process.env.TURSO_AUTH_TOKEN ?? '',
 });
 
 export const createUser = async (
@@ -10,7 +10,7 @@ export const createUser = async (
   username: string,
   email: string,
   github_id: string | null = null,
-  google_id: string | null = null
+  google_id: string | null = null,
 ) => {
   try {
     await db.execute({
@@ -35,7 +35,7 @@ export const createUser = async (
 export const verifyExistingUser = async (
   username: string | null = null,
   github_id: string | null = null,
-  google_id: string | null = null
+  google_id: string | null = null,
 ) => {
   try {
     const user = (
@@ -113,7 +113,8 @@ export const getActiveCursos = async () => {
         FROM Curso c 
         LEFT JOIN Alumno a ON c.id = a.id_curso 
         WHERE c.estado = 1 
-        GROUP BY c.id`,
+        GROUP BY c.id
+        ORDER BY c.id DESC`,
       args: {},
     });
     return cursos.rows as any as Curso[];
@@ -170,6 +171,72 @@ export const getCursosCount = async () => {
   }
 };
 
+export const CreateAlumno = async (alumno: Alumno) => {
+  try {
+    let resp = await db.execute({
+      sql: `INSERT INTO Alumno 
+        (nombre, encargado, estado, numero_contacto_1, numero_contacto_2, mensualidad, inscripcion, fecha_registro, id_curso, dia_corte)
+        VALUES
+        (:nombre, :encargado, :estado, :numero_contacto_1, :numero_contacto_2, :mensualidad, :inscripcion, :fecha_registro, :id_curso, :dia_corte)`,
+      args: {
+        nombre: alumno.nombre,
+        encargado: alumno.encargado,
+        estado: alumno.estado,
+        numero_contacto_1: alumno.numero_contacto_1,
+        numero_contacto_2: alumno.numero_contacto_2,
+        mensualidad: alumno.mensualidad,
+        inscripcion: alumno.inscripcion,
+        fecha_registro: alumno.fecha_registro,
+        id_curso: alumno.id_curso,
+        dia_corte: alumno.dia_corte,
+      },
+    });
+    return Number(resp.lastInsertRowid);
+  } catch (e) {
+    return e;
+  }
+};
+
+export const updateAlumno = async (alumno: Alumno) => {
+  try {
+    await db.execute({
+      sql: `UPDATE Alumno 
+        SET nombre = :nombre, encargado = :encargado, estado = :estado, numero_contacto_1 = :numero_contacto_1, numero_contacto_2 = :numero_contacto_2, mensualidad = :mensualidad, inscripcion = :inscripcion, fecha_registro = :fecha_registro, id_curso = :id_curso, dia_corte = :dia_corte
+        WHERE id = :id`,
+      args: {
+        id: alumno.id,
+        nombre: alumno.nombre,
+        encargado: alumno.encargado,
+        estado: alumno.estado,
+        numero_contacto_1: alumno.numero_contacto_1,
+        numero_contacto_2: alumno.numero_contacto_2,
+        mensualidad: alumno.mensualidad,
+        inscripcion: alumno.inscripcion,
+        fecha_registro: alumno.fecha_registro,
+        id_curso: alumno.id_curso,
+        dia_corte: alumno.dia_corte,
+      },
+    });
+    return true;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const deleteAlumno = async (id: number) => {
+  try {
+    await db.execute({
+      sql: `DELETE FROM Alumno WHERE id = :id`,
+      args: {
+        id: id,
+      },
+    });
+    return true;
+  } catch (e) {
+    return e;
+  }
+};
+
 export const getAllAlumnos = async () => {
   try {
     const alumnos = await db.execute({
@@ -177,6 +244,112 @@ export const getAllAlumnos = async () => {
       args: {},
     });
     return alumnos;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getAlumnosByCurso = async (cursoId: number) => {
+  try {
+    const alumnos = (
+      await db.execute({
+        sql: `SELECT * FROM Alumno WHERE id_curso = :cursoId ORDER BY id DESC`,
+        args: {
+          cursoId: cursoId,
+        },
+      })
+    ).rows as any as Alumno[];
+    await Promise.all(
+      alumnos.map(async (alumno) => {
+        const ingresos = await db.execute({
+          sql: `SELECT * FROM Transaccion WHERE id_alumno = :id`,
+          args: {
+            id: alumno.id.toString(),
+          },
+        });
+        console.log(alumno);
+        console.log(ingresos);
+        alumno.transacciones = ingresos.rows as any as Transaccion[];
+      }),
+    );
+    return alumnos;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getActiveAlumnosByCurso = async (cursoId: number) => {
+  try {
+    const alumnos = (
+      await db.execute({
+        sql: `SELECT * FROM Alumno WHERE id_curso = :cursoId AND estado = 1 ORDER BY id DESC`,
+        args: {
+          cursoId: cursoId,
+        },
+      })
+    ).rows as any as Alumno[];
+
+    return alumnos;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const createTransaccion = async (transaccion: Transaccion) => {
+  try {
+    let resp = await db.execute({
+      sql: `INSERT INTO Transaccion 
+        (id_alumno, id_user, tipo, categoria, monto, fecha, comentario)
+        VALUES
+        (:id_alumno, :id_user, :tipo, :categoria, :monto, :fecha, :comentario)`,
+      args: {
+        id_alumno: transaccion.id_alumno,
+        id_user: transaccion.id_user,
+        tipo: transaccion.tipo,
+        categoria: transaccion.categoria,
+        monto: transaccion.monto,
+        fecha: transaccion.fecha,
+        comentario: transaccion.comentario,
+      },
+    });
+    return Number(resp.lastInsertRowid);
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getAllTransacciones = async () => {
+  try {
+    const transacciones = await db.execute({
+      sql: `SELECT t.*, a.nombre as nombre_alumno 
+        FROM Transaccion t 
+        LEFT JOIN Alumno a ON t.id_alumno = a.id 
+        ORDER BY t.id DESC`,
+      args: {},
+    });
+    return transacciones.rows as any as Transaccion[];
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getTransaccionesByDateRange = async (
+  startDate: number,
+  endDate: number,
+) => {
+  try {
+    const transacciones = await db.execute({
+      sql: `SELECT t.*, a.nombre as nombre_alumno 
+        FROM Transaccion t 
+        LEFT JOIN Alumno a ON t.id_alumno = a.id 
+        WHERE t.fecha BETWEEN :startDate AND :endDate 
+        ORDER BY t.id DESC`,
+      args: {
+        startDate: startDate,
+        endDate: endDate,
+      },
+    });
+    return transacciones.rows as any as Transaccion[];
   } catch (e) {
     return e;
   }
@@ -197,17 +370,30 @@ export interface Curso {
   estado: boolean;
   cantidadAlumnos: number;
 }
+
 export interface Alumno {
   id: number;
   nombre: string;
-  encargado: string;
+  encargado: string | null;
   estado: boolean;
   numero_contacto_1: number;
-  numero_contacto_2: number;
-  numero_contacto_3: number;
+  numero_contacto_2: number | null;
   mensualidad: number;
   inscripcion: number;
   fecha_registro: number;
   id_curso: number;
   dia_corte: number;
+  transacciones: Transaccion[];
+}
+
+export interface Transaccion {
+  id: number;
+  id_alumno: string | null;
+  nombre_alumno: string | null;
+  id_user: string;
+  tipo: number;
+  categoria: string;
+  monto: number;
+  fecha: number; // UNIX timestamp
+  comentario: string | null;
 }

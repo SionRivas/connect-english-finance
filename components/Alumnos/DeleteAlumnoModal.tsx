@@ -9,40 +9,40 @@ import {
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { BorderBeam } from "@/components/ui/border-beam";
-import { type Curso } from "@/lib/db";
+import { type Alumno } from "@/lib/db";
 
-interface DeleteCursoModalProps {
-  curso?: Curso;
+interface DeleteAlumnoModalProps {
+  alumno?: Alumno | null;
   isOpen: boolean;
   onClose: () => void;
-  onDelete: (cursoId: Number) => void;
+  onDelete: (alumnoId: Number) => void;
 }
 
-export const DeleteCursoModal = ({
-  curso,
+export const DeleteAlumnoModal = ({
+  alumno,
   isOpen,
   onClose,
   onDelete,
-}: DeleteCursoModalProps) => {
+}: DeleteAlumnoModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (curso) {
-      console.log(`Preparing to delete curso: ${curso.nombre}`);
+    if (alumno) {
+      console.log(`Preparing to delete alumno: ${alumno.nombre}`);
     }
-  }, [curso]);
+  }, [alumno]);
 
   function handleDelete() {
     setIsLoading(true);
     setError("");
-    fetch("/api/cursos", {
+    fetch("/api/alumnos", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: curso?.id,
+        id: alumno?.id,
       }),
     })
       .then((res) => {
@@ -55,7 +55,7 @@ export const DeleteCursoModal = ({
         }
       })
       .then((data) => {
-        onDelete(curso?.id as Number);
+        onDelete(alumno?.id as Number);
         setIsLoading(false);
         onClose();
       })
@@ -93,8 +93,8 @@ export const DeleteCursoModal = ({
               Confirmar Eliminación
             </ModalHeader>
             <ModalBody className="w-full">
-              <p>¿Está seguro que desea eliminar el curso</p>
-              <p className="font-bold">{curso?.nombre}?</p>
+              <p>¿Está seguro que desea eliminar al alumno</p>
+              <p className="font-bold">{alumno?.nombre}?</p>
               <p className="text-sm text-danger-400">{error}</p>
             </ModalBody>
             <ModalFooter className="self-end">

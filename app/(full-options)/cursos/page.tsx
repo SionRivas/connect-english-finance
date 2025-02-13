@@ -1,16 +1,10 @@
 import { title } from "@/components/primitives";
 import { redirect } from "next/navigation";
 import { validateRequest } from "@/lib/auth";
-import { Button } from "@heroui/button";
-import { CrearCursoModal } from "@/components/Cursos/CrearCursoModal";
-import { TableExport } from "@/components/icons";
-import { Card, CardBody } from "@heroui/card";
-
 import { getCursosCount } from "@/lib/db";
-
 import TableCursos from "@/components/Cursos/TableCursos";
 
-export default async function AboutPage() {
+export default async function CursosPage() {
   const { user } = await validateRequest();
   if (!user) {
     return redirect("/login");
@@ -25,14 +19,8 @@ export default async function AboutPage() {
           En esta sección podrás ver los cursos creados y administrarlos.
         </p>
       </div>
-      <div className="flex gap-3 w-full flex-wrap">
-        <CrearCursoModal />
-        <Button startContent={<TableExport />} color="primary" variant="shadow">
-          Exportar a Excel
-        </Button>
-      </div>
       <div>
-        <TableCursos pageSize={8} totalItems={cursosCount} />
+        <TableCursos pageSize={8} totalItemsInit={cursosCount} />
       </div>
     </div>
   );

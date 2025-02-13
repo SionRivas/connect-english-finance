@@ -1,4 +1,5 @@
 import { createCurso, updateCurso, deleteCurso, type Curso } from "@/lib/db";
+import { error } from "console";
 
 export async function POST(request: Request): Promise<Response> {
   try {
@@ -98,7 +99,13 @@ export async function DELETE(request: Request): Promise<Response> {
     }
 
     try {
-      await deleteCurso(id);
+      let result = await deleteCurso(id);
+      if ((result as any).code === "SQLITE_CONSTRAINT") {
+        return jsonResponse(
+          { error: "No se puede eliminar el curso, tiene alumnos registrados" },
+          400
+        );
+      }
       return jsonResponse({}, 200);
     } catch (e) {
       return jsonResponse({ error: "Error al eliminar el curso" }, 500);

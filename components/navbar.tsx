@@ -59,11 +59,11 @@ export const Navbar = ({ username }: NavbarProps) => {
       </NavbarContent>
 
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
+        className="hidden md:flex basis-1/5 sm:basis-full"
         justify="center"
       >
-        <NavbarItem className="hidden sm:flex gap-2">
-          <ul className="hidden lg:flex gap-4 justify-start ml-2">
+        <NavbarItem className="flex gap-2">
+          <ul className="flex gap-4 justify-start ml-2">
             {siteConfig.navItems.map((item) => (
               <NavbarItem key={item.href}>
                 <NextLink
@@ -83,14 +83,14 @@ export const Navbar = ({ username }: NavbarProps) => {
       </NavbarContent>
 
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
+        className="hidden  md:flex basis-1/5 sm:basis-full"
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
           <div className="flex flex-col items-end">
             <span className="font-bold text-inherit">Bienvendio</span>
-            <span className="text-xs text-green-600 dark:text-red-700">
+            <span className="text-xs text-success-500 dark:text-red-700">
               {username}
             </span>
           </div>
@@ -98,10 +98,7 @@ export const Navbar = ({ username }: NavbarProps) => {
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
+      <NavbarContent className="md:hidden basis-1 pl-4" justify="end">
         <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>

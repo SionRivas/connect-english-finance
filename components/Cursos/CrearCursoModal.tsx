@@ -1,6 +1,6 @@
 "use client";
-import { PlusIcon } from "@/components/icons";
-import { useState, FormEvent } from "react"; // Add this import
+import { PlusIcon, SaveIcon } from "@/components/icons";
+import { useState, FormEvent } from "react";
 import { now, getLocalTimeZone } from "@internationalized/date";
 import {
   Modal,
@@ -8,31 +8,41 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useDisclosure,
 } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { BorderBeam } from "@/components/ui/border-beam";
-import { parseDate } from "@internationalized/date";
 import { DatePicker } from "@heroui/date-picker";
 import { Form } from "@heroui/form";
-// ... other imports remain the same ...
 
-export const CrearCursoModal = () => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+interface CrearCursoModalProps {
+  onCreate: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const CrearCursoModal = ({
+  onCreate,
+  isOpen,
+  onClose,
+}: CrearCursoModalProps) => {
   const [nombre, setNombre] = useState("");
   const [fechaDeInicio, setFechaDeInicio] = useState(now(getLocalTimeZone()));
   const [isLoading, setIsLoading] = useState(false);
-  function onClose() {
+  const [error, setError] = useState("");
+
+  function handleClose() {
     setNombre("");
     setFechaDeInicio(now(getLocalTimeZone()));
     setIsLoading(false);
-    onOpenChange();
+    setError("");
+    onClose();
   }
 
   function crearCurso(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     fetch("/api/cursos", {
       method: "POST",
       headers: {
@@ -43,87 +53,87 @@ export const CrearCursoModal = () => {
         fechaDeInicio: fechaDeInicio.toString(),
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 200) {
+          return res.json();
+        } else {
+          return res.json().then((data) => {
+            throw new Error(data.error);
+          });
+        }
+      })
       .then((data) => {
-        onClose();
-        console.log(data);
+        handleClose();
+        onCreate(); // Llamar a la función onCreate después de crear el curso
+      })
+      .catch((err) => {
+        setError(err.message);
+        setIsLoading(false);
       });
   }
 
   return (
-    <>
-      <Button
-        startContent={<PlusIcon />}
-        color="success"
-        variant="shadow"
-        onPress={onOpen}
-        className="text-white"
-      >
-        Nuevo Curso
-      </Button>
-      <Modal
-        onClose={onClose}
-        backdrop="blur"
-        isOpen={isOpen}
-        placement="center"
-        onOpenChange={onOpenChange}
-        className="overflow-hidden"
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <BorderBeam
-                size={250}
-                duration={20}
-                delay={9}
-                colorFrom="#41db78"
-                colorTo="#2a8e4e"
-                borderWidth={2}
-              />
-
-              <ModalHeader className="flex flex-col gap-1">
-                Nuevo Curso
-              </ModalHeader>
-              <Form onSubmit={crearCurso} validationBehavior="native">
-                <ModalBody className="w-full">
-                  <Input
-                    autoFocus
-                    isRequired
-                    label="Nombre"
-                    placeholder="Ingrese el nombre del curso"
-                    variant="underlined"
-                    color="success"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                  />
-                  <DatePicker
-                    color="success"
-                    variant="underlined"
-                    label="Fecha de inicio"
-                    value={fechaDeInicio}
-                    onChange={(date) => date && setFechaDeInicio(date)}
-                    granularity="day"
-                  />
-                </ModalBody>
-                <ModalFooter className="self-end">
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Cancelar
-                  </Button>
-                  <Button
-                    className="text-white"
-                    color="success"
-                    variant="shadow"
-                    type="submit"
-                    isLoading={isLoading}
-                  >
-                    Guardar
-                  </Button>
-                </ModalFooter>
-              </Form>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal
+      onClose={handleClose}
+      backdrop="blur"
+      isOpen={isOpen}
+      placement="center"
+      className="overflow-hidden"
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <BorderBeam
+              size={250}
+              duration={20}
+              delay={9}
+              colorFrom="#17c964"
+              colorTo="#17c964"
+              borderWidth={2}
+            />
+            <ModalHeader className="flex flex-col gap-1">
+              Nuevo Curso
+            </ModalHeader>
+            <Form onSubmit={crearCurso} validationBehavior="native">
+              <ModalBody className="w-full">
+                <Input
+                  autoFocus
+                  isRequired
+                  label="Nombre"
+                  placeholder="Ingrese el nombre del curso"
+                  variant="underlined"
+                  color="success"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                />
+                <DatePicker
+                  color="success"
+                  variant="underlined"
+                  label="Fecha de inicio"
+                  value={fechaDeInicio}
+                  onChange={(date) => date && setFechaDeInicio(date)}
+                  granularity="day"
+                />
+                <p className="text-sm text-danger-400">{error}</p>
+              </ModalBody>
+              <ModalFooter className="self-end">
+                <Button color="danger" variant="light" onPress={handleClose}>
+                  Cancelar
+                </Button>
+                <Button
+                  className="text-white"
+                  color="success"
+                  variant="shadow"
+                  type="submit"
+                  isLoading={isLoading}
+                >
+                  Guardar
+                </Button>
+              </ModalFooter>
+            </Form>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };

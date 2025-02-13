@@ -1,16 +1,11 @@
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { Button, ButtonGroup } from "@heroui/button";
-import { button as buttonStyles } from "@heroui/theme";
-import { FlickeringGrid } from "@/components/ui/flickering-grid";
+import { Card } from "@heroui/card";
+import { Button } from "@heroui/button";
 
 import { Meteors } from "@/components/ui/meteors";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { NeonGradientCard } from "@/components/ui/neon-gradient-card";
-import { Link } from "@heroui/link";
 import { title, subtitle } from "@/components/primitives";
 
-import { Image } from "@heroui/image";
-import { siteConfig } from "@/config/site";
 import { GoogleIcon } from "@/components/icons";
 
 export default async function Page() {
@@ -24,15 +19,16 @@ export default async function Page() {
       /> */}
       <Card
         className="relative py-12  pb-8 px-4  mt-16
-       flex flex-col max-w-xl text-center justify-center items-center gap-4"
+       flex flex-col max-w-xl text-center justify-center items-center "
       >
-        <Meteors number={5} />
+        <Meteors />
         <BorderBeam
           size={250}
           duration={12}
           delay={9}
-          colorFrom="#41db78"
-          colorTo="#2a8e4e"
+          colorFrom="#17c964"
+          colorTo="#17c964"
+          borderWidth={2}
         />
         <div>
           <p className={title()}>Connect English</p>
@@ -41,21 +37,26 @@ export default async function Page() {
             <span className={title({ color: "green" })}> Financiero</span>
           </p>
         </div>
-        <div className={subtitle({ class: "m-0 p-0" })}>
-          Inica sesión para continuar
-        </div>
 
-        <a href="/login/google" className="mt-8">
-          <Button
-            color="success"
-            size="lg"
-            className="text-white"
-            variant="shadow"
+        <div className="flex flex-col mt-8 gap-2">
+          <a href="/login/google" className="">
+            <Button
+              color="success"
+              size="lg"
+              className="text-white"
+              variant="shadow"
+            >
+              Acceder con Google
+              <GoogleIcon />
+            </Button>
+          </a>
+          <div
+            className="text-default-300 font-light text-sm
+          "
           >
-            Acceder con Google
-            <GoogleIcon />
-          </Button>
-        </a>
+            Inica sesión para continuar
+          </div>
+        </div>
       </Card>
     </>
   );

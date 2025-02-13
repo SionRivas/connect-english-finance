@@ -37,6 +37,7 @@ export const EditarCursoModal = ({
   const [fechaDeInicio, setFechaDeInicio] = useState<DateValue | null>(null);
   const [estado, setEstado] = useState(curso?.estado || 0);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (curso) {
@@ -53,6 +54,7 @@ export const EditarCursoModal = ({
   function handleSave(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     fetch("/api/cursos", {
       method: "PUT",
       headers: {
@@ -65,7 +67,15 @@ export const EditarCursoModal = ({
         estado: estado === 1,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 200) {
+          return res.json();
+        } else {
+          return res.json().then((data) => {
+            throw new Error(data.error);
+          });
+        }
+      })
       .then((data) => {
         onSave({
           id: curso?.id,
@@ -77,7 +87,12 @@ export const EditarCursoModal = ({
         } as Curso);
 
         setIsLoading(false);
+        setError("");
         onClose();
+      })
+      .catch((err) => {
+        setError(err.message);
+        setIsLoading(false);
       });
   }
 
@@ -96,8 +111,8 @@ export const EditarCursoModal = ({
               size={250}
               duration={20}
               delay={9}
-              colorFrom="#41db78"
-              colorTo="#2a8e4e"
+              colorFrom="#17c964"
+              colorTo="#17c964"
               borderWidth={2}
             />
 
@@ -127,11 +142,12 @@ export const EditarCursoModal = ({
                 <Button
                   className="w-min"
                   color={estado === 1 ? "success" : "default"}
-                  variant="ghost"
+                  variant="flat"
                   onPress={() => setEstado(estado === 1 ? 0 : 1)}
                 >
                   {estado === 1 ? "Activo" : "Inactivo"}
                 </Button>
+                <p className="text-sm text-danger-400">{error}</p>
               </ModalBody>
               <ModalFooter className="self-end">
                 <Button color="danger" variant="light" onPress={onClose}>

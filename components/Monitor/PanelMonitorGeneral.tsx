@@ -1,0 +1,151 @@
+'use client';
+import React, { useState } from 'react';
+import RevenueChart from './RevenueChart';
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  DateRangePicker,
+  Tooltip,
+} from '@heroui/react';
+import { TableExportIcon, TrendingDownIcon, TrendingUpIcon } from '../icons';
+import FinancialCard from './FinancialCard';
+import { CrearIngresoModal } from './CrearIngresoModal';
+import { CrearEgresoModal } from './CrearEgresoModal';
+import TableTransacciones from './TableTransacciones';
+import {
+  today,
+  getLocalTimeZone,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from '@internationalized/date';
+import { useLocale } from '@react-aria/i18n';
+interface PanelMonitorProps {
+  userId: string;
+}
+
+export default function PanelMonitorGeneral({ userId }: PanelMonitorProps) {
+  const [isIngresoModalOpen, setIsIngresoModalOpen] = useState(false);
+  const [isEgresoModalOpen, setIsEgresoModalOpen] = useState(false);
+
+  const [ingresos, setIngresos] = useState(0);
+  const [egresos, setEgresos] = useState(0);
+
+  let { locale } = useLocale();
+  let now = today(getLocalTimeZone());
+  let thisWeek = {
+    start: startOfWeek(now, locale),
+    end: endOfWeek(now, locale),
+  };
+  let thisMonth = {
+    start: startOfMonth(now),
+    end: endOfMonth(now),
+  };
+  let last3Months = {
+    start: startOfMonth(now.subtract({ months: 2 })),
+    end: endOfMonth(now),
+  };
+
+  let [value, setValue] = React.useState(thisWeek);
+  return (
+    <>
+      {' '}
+      <div className="flex w-full flex-col place-items-center gap-5">
+        <div className="flex w-full max-w-5xl flex-wrap place-content-between place-items-center gap-2">
+          <div className="flex gap-2">
+            <Button
+              color="success"
+              className="text-white"
+              variant="shadow"
+              startContent={<TrendingUpIcon />}
+              onPress={() => setIsIngresoModalOpen(true)}
+            >
+              Ingreso
+            </Button>
+            <Button
+              color="danger"
+              className="text-white"
+              variant="shadow"
+              startContent={<TrendingDownIcon />}
+              onPress={() => setIsEgresoModalOpen(true)}
+            >
+              Egreso
+            </Button>
+            <Tooltip
+              content="Exportar tabla a Excel"
+              showArrow={true}
+              placement="bottom"
+              color="primary"
+            >
+              <Button
+                startContent={<TableExportIcon />}
+                isIconOnly
+                color="primary"
+                variant="shadow"
+              />
+            </Tooltip>
+          </div>
+
+          <div className="flex flex-wrap place-items-end gap-1 md:flex-nowrap md:gap-4">
+            <DateRangePicker
+              isRequired
+              className="max-w-xs"
+              variant="underlined"
+              value={value}
+              onChange={(date) => {
+                date && setValue(date);
+                console.log(date);
+              }}
+              label="Rango de fechas"
+            />
+            <ButtonGroup
+              fullWidth
+              className="max-w-full"
+              radius="full"
+              size="sm"
+              color="success"
+              variant="flat"
+            >
+              <Button onPress={() => setValue(thisWeek)}>Esta semana</Button>
+              <Button onPress={() => setValue(thisMonth)}>Este mes</Button>
+              <Button onPress={() => setValue(last3Months)}>
+                Ultimos 3 meses
+              </Button>
+            </ButtonGroup>
+          </div>
+        </div>
+        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
+          <div className="w-full md:col-span-2">
+            <TableTransacciones
+              startDate={value.start}
+              endDate={value.end}
+              onUpdated={(ingreso, egreso) => {
+                setIngresos(ingreso);
+                setEgresos(egreso);
+              }}
+            />
+          </div>
+          <div className="w-full">
+            <Card className="flex flex-col gap-5 p-7">
+              <FinancialCard ingresos={ingresos} egresos={egresos} />
+            </Card>
+          </div>
+        </div>
+      </div>
+      <CrearIngresoModal
+        userId={userId}
+        isOpen={isIngresoModalOpen}
+        onClose={() => setIsIngresoModalOpen(false)}
+        onCreate={() => setIsIngresoModalOpen(false)}
+      />
+      <CrearEgresoModal
+        userId={userId}
+        isOpen={isEgresoModalOpen}
+        onClose={() => setIsEgresoModalOpen(false)}
+        onCreate={() => setIsEgresoModalOpen(false)}
+      />
+    </>
+  );
+}

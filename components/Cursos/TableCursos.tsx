@@ -19,12 +19,13 @@ import {
 import useSWR from "swr";
 
 import { type Curso } from "@/lib/db";
-import { DotsVertical } from "../icons";
+import { DotsVertical, PlusIcon, TableExportIcon } from "../icons";
 import { EditarCursoModal } from "./EditarCursoModal";
 import { DeleteCursoModal } from "./DeleteCursoModal";
+import { CrearCursoModal } from "./CrearCursoModal";
 
 interface TableCursosProps {
-  totalItems: number;
+  totalItemsInit: number;
   pageSize: number;
 }
 
@@ -37,7 +38,7 @@ interface SortDescriptor {
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function TableCursos({
-  totalItems,
+  totalItemsInit,
   pageSize,
 }: TableCursosProps) {
   // Estado para la página actual
@@ -48,7 +49,15 @@ export default function TableCursos({
     column: null,
     direction: "ascending",
   });
+  // Estado para el total de items
+  const [totalItems, setTotalItems] = useState(totalItemsInit);
 
+  // Función para actualizar el total de items
+  const updateTotalItems = (operation: "add" | "subtract") => {
+    setTotalItems((prevTotal) =>
+      operation === "add" ? prevTotal + 1 : prevTotal - 1
+    );
+  };
   // URL de la API con paginación
   const apiUrl = `http://localhost:3000/api/cursos/getPagination?page=${page}&limit=${pageSize}`;
 
@@ -172,6 +181,7 @@ export default function TableCursos({
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   function eliminarCurso(curso: Curso) {
     setSelectedCurso(curso);
@@ -184,22 +194,31 @@ export default function TableCursos({
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-5">
+      <div className="flex gap-3 w-full flex-wrap">
+        <Button
+          color="success"
+          variant="shadow"
+          onPress={() => setIsCreateModalOpen(true)}
+          startContent={<PlusIcon />}
+          className="text-white"
+        >
+          Crear Curso
+        </Button>
+
+        <Button
+          startContent={<TableExportIcon />}
+          color="primary"
+          variant="shadow"
+        >
+          Exportar a Excel
+        </Button>
+      </div>
       <Table
         aria-label="Tabla de cursos con paginación y ordenamiento"
-        selectionMode="single"
-        bottomContent={
-          <div className="flex justify-start mt-4">
-            <Pagination
-              page={page}
-              total={totalPages}
-              color="success"
-              onChange={(newPage) => setPage(newPage)}
-              isCompact
-              showControls
-            />
-          </div>
-        }
+        classNames={{
+          wrapper: "min-h-[397px]",
+        }}
       >
         <TableHeader>
           {columns.map((column) => (
@@ -222,8 +241,14 @@ export default function TableCursos({
         >
           {(item: Curso) => (
             <TableRow
+              className="cursor-pointer hover:bg-default-100"
               key={item.id || item.nombre}
               onDoubleClick={() => editarCurso(item)}
+              onTouchEnd={(e) => {
+                if (e.detail === 2) {
+                  editarCurso(item);
+                }
+              }}
             >
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey)}</TableCell>
@@ -232,7 +257,16 @@ export default function TableCursos({
           )}
         </TableBody>
       </Table>
-
+      <div className="flex justify-start mt-4">
+        <Pagination
+          page={page}
+          total={totalPages}
+          color="success"
+          onChange={(newPage) => setPage(newPage)}
+          isCompact
+          showControls
+        />
+      </div>
       <EditarCursoModal
         isOpen={isEditModalOpen}
         onSave={(curso: Curso) => {
@@ -247,6 +281,7 @@ export default function TableCursos({
           setIsEditModalOpen(false);
         }}
         onClose={() => {
+          setSelectedCurso(null);
           setIsEditModalOpen(false);
         }}
         curso={selectedCurso as Curso}
@@ -258,12 +293,21 @@ export default function TableCursos({
           console.log("Curso eliminado", id);
           // En lugar de actualizar la caché local, se borra y se vuelve a hacer la petición para tener la data actualizada
           mutate();
+          updateTotalItems("subtract");
           setIsDeleteModalOpen(false);
         }}
         onClose={() => {
           setIsDeleteModalOpen(false);
         }}
         curso={selectedCurso as Curso}
+      />
+      <CrearCursoModal
+        onCreate={() => {
+          mutate();
+          updateTotalItems("add");
+        }}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
       />
     </div>
   );
