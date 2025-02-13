@@ -1,9 +1,9 @@
-"use client";
-import { useState } from "react";
-import { Autocomplete, AutocompleteItem, Button } from "@heroui/react";
+'use client';
+import { useState } from 'react';
+import { Autocomplete, AutocompleteItem, Button } from '@heroui/react';
 
-import { type Curso } from "@/lib/db";
-import { ActivityIcon, JustmidLineIcon } from "../icons";
+import { type Curso } from '@/lib/db';
+import { ActivityIcon, JustmidLineIcon } from '../icons';
 
 interface SearchCurso {
   CursosActivosInit: Curso[];
@@ -29,7 +29,7 @@ export default function SearchCurso({
 
     setIsLoading(true);
     if (allCursos.length === 0) {
-      await fetch("/api/cursos/getAll")
+      await fetch('/api/cursos/getAll')
         .then((response) => response.json())
         .then((data) => {
           setCursosActivos(data);
@@ -46,13 +46,13 @@ export default function SearchCurso({
   }
 
   return (
-    <div className="flex place-items-center gap-2  w-full flex-nowrap">
+    <div className="flex w-full flex-nowrap place-items-center gap-2">
       <Button
         size="sm"
         isIconOnly
         isLoading={isloading}
         onPress={handleJustActive}
-        color={justActive ? "success" : "default"}
+        color={justActive ? 'success' : 'default'}
         variant="solid"
         className="text-white"
       >
@@ -67,11 +67,11 @@ export default function SearchCurso({
       >
         {(item) => (
           <AutocompleteItem key={item.id} textValue={item.nombre}>
-            <div className="flex gap-2 items-center">
-              <div className="flex gap-2 place-content-center place-items-center">
+            <div className="flex items-center gap-2">
+              <div className="flex place-content-center place-items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    item.estado ? "bg-success-500" : "bg-danger-500"
+                  className={`h-2 w-2 rounded-full ${
+                    item.estado ? 'bg-success-500' : 'bg-danger-500'
                   }`}
                 >
                   &nbsp;

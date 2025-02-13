@@ -1,19 +1,19 @@
-"use client";
-import { PlusIcon, SaveIcon } from "@/components/icons";
-import { useState, FormEvent } from "react";
-import { now, getLocalTimeZone } from "@internationalized/date";
+'use client';
+import { PlusIcon, SaveIcon } from '@/components/icons';
+import { useState, FormEvent } from 'react';
+import { now, getLocalTimeZone } from '@internationalized/date';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from "@heroui/modal";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { BorderBeam } from "@/components/ui/border-beam";
-import { DatePicker } from "@heroui/date-picker";
-import { Form } from "@heroui/form";
+} from '@heroui/modal';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { DatePicker } from '@heroui/date-picker';
+import { Form } from '@heroui/form';
 
 interface CrearCursoModalProps {
   onCreate: () => void;
@@ -26,27 +26,27 @@ export const CrearCursoModal = ({
   isOpen,
   onClose,
 }: CrearCursoModalProps) => {
-  const [nombre, setNombre] = useState("");
+  const [nombre, setNombre] = useState('');
   const [fechaDeInicio, setFechaDeInicio] = useState(now(getLocalTimeZone()));
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   function handleClose() {
-    setNombre("");
+    setNombre('');
     setFechaDeInicio(now(getLocalTimeZone()));
     setIsLoading(false);
-    setError("");
+    setError('');
     onClose();
   }
 
   function crearCurso(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
-    fetch("/api/cursos", {
-      method: "POST",
+    setError('');
+    fetch('/api/cursos', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         nombre: nombre,

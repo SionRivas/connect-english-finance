@@ -1,15 +1,15 @@
-"use client";
-import { useState, useEffect } from "react";
+'use client';
+import { useState, useEffect } from 'react';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from "@heroui/modal";
-import { Button } from "@heroui/button";
-import { BorderBeam } from "@/components/ui/border-beam";
-import { type Alumno } from "@/lib/db";
+} from '@heroui/modal';
+import { Button } from '@heroui/button';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { type Alumno } from '@/lib/db';
 
 interface DeleteAlumnoModalProps {
   alumno?: Alumno | null;
@@ -25,7 +25,7 @@ export const DeleteAlumnoModal = ({
   onDelete,
 }: DeleteAlumnoModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (alumno) {
@@ -35,11 +35,11 @@ export const DeleteAlumnoModal = ({
 
   function handleDelete() {
     setIsLoading(true);
-    setError("");
-    fetch("/api/alumnos", {
-      method: "DELETE",
+    setError('');
+    fetch('/api/alumnos', {
+      method: 'DELETE',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: alumno?.id,
@@ -69,7 +69,7 @@ export const DeleteAlumnoModal = ({
     <Modal
       onClose={() => {
         setIsLoading(false);
-        setError("");
+        setError('');
         onClose();
       }}
       backdrop="blur"

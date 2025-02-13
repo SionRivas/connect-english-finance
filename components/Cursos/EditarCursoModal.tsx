@@ -1,10 +1,10 @@
-"use client";
-import { PlusIcon } from "@/components/icons";
-import { useState, FormEvent, useEffect } from "react";
-import { getLocalTimeZone, parseDate } from "@internationalized/date";
+'use client';
+import { PlusIcon } from '@/components/icons';
+import { useState, FormEvent, useEffect } from 'react';
+import { getLocalTimeZone, parseDate } from '@internationalized/date';
 
-import { DateValue, now, parseAbsoluteToLocal } from "@internationalized/date";
-import { useDateFormatter } from "@react-aria/i18n";
+import { DateValue, now, parseAbsoluteToLocal } from '@internationalized/date';
+import { useDateFormatter } from '@react-aria/i18n';
 import {
   Modal,
   ModalContent,
@@ -12,13 +12,13 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@heroui/modal";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { BorderBeam } from "@/components/ui/border-beam";
-import { DatePicker } from "@heroui/date-picker";
-import { Form } from "@heroui/form";
-import { type Curso } from "@/lib/db";
+} from '@heroui/modal';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { DatePicker } from '@heroui/date-picker';
+import { Form } from '@heroui/form';
+import { type Curso } from '@/lib/db';
 
 interface EditarCursoModalProps {
   curso?: Curso;
@@ -33,17 +33,17 @@ export const EditarCursoModal = ({
   onClose,
   onSave,
 }: EditarCursoModalProps) => {
-  const [nombre, setNombre] = useState(curso?.nombre || "");
+  const [nombre, setNombre] = useState(curso?.nombre || '');
   const [fechaDeInicio, setFechaDeInicio] = useState<DateValue | null>(null);
   const [estado, setEstado] = useState(curso?.estado || 0);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (curso) {
       setNombre(curso.nombre);
       setFechaDeInicio(
-        parseAbsoluteToLocal(new Date(curso.fechaDeInicio).toISOString())
+        parseAbsoluteToLocal(new Date(curso.fechaDeInicio).toISOString()),
       );
 
       setEstado(curso.estado ? 1 : 0);
@@ -54,11 +54,11 @@ export const EditarCursoModal = ({
   function handleSave(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
-    fetch("/api/cursos", {
-      method: "PUT",
+    setError('');
+    fetch('/api/cursos', {
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: curso?.id,
@@ -87,7 +87,7 @@ export const EditarCursoModal = ({
         } as Curso);
 
         setIsLoading(false);
-        setError("");
+        setError('');
         onClose();
       })
       .catch((err) => {
@@ -117,7 +117,7 @@ export const EditarCursoModal = ({
             />
 
             <ModalHeader className="flex flex-col gap-1">
-              {curso ? "Editar Curso" : "Nuevo Curso"}
+              {curso ? 'Editar Curso' : 'Nuevo Curso'}
             </ModalHeader>
             <Form onSubmit={handleSave} validationBehavior="native">
               <ModalBody className="w-full">
@@ -141,11 +141,11 @@ export const EditarCursoModal = ({
                 />
                 <Button
                   className="w-min"
-                  color={estado === 1 ? "success" : "default"}
+                  color={estado === 1 ? 'success' : 'default'}
                   variant="flat"
                   onPress={() => setEstado(estado === 1 ? 0 : 1)}
                 >
-                  {estado === 1 ? "Activo" : "Inactivo"}
+                  {estado === 1 ? 'Activo' : 'Inactivo'}
                 </Button>
                 <p className="text-sm text-danger-400">{error}</p>
               </ModalBody>

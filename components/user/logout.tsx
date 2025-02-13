@@ -1,11 +1,11 @@
-import { lucia, validateRequest } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { LogoutIcon } from "../icons";
-import { Button, ButtonGroup } from "@heroui/button";
+import { lucia, validateRequest } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { LogoutIcon } from '../icons';
+import { Button, ButtonGroup } from '@heroui/button';
 export default async function Page() {
   return (
-    <form action={logout} className="flex items-center justify-center ">
+    <form action={logout} className="flex items-center justify-center">
       <Button isIconOnly size="sm" type="submit" color="success">
         <LogoutIcon className="text-white" />
       </Button>
@@ -14,11 +14,11 @@ export default async function Page() {
 }
 
 async function logout(): Promise<ActionResult> {
-  "use server";
+  'use server';
   const { session } = await validateRequest();
   if (!session) {
     return {
-      error: "Unauthorized",
+      error: 'Unauthorized',
     };
   }
 
@@ -28,9 +28,9 @@ async function logout(): Promise<ActionResult> {
   (await cookies()).set(
     sessionCookie.name,
     sessionCookie.value,
-    sessionCookie.attributes
+    sessionCookie.attributes,
   );
-  return redirect("/login");
+  return redirect('/login');
 }
 
 interface ActionResult {

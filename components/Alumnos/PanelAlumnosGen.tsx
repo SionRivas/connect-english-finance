@@ -1,14 +1,14 @@
-"use client";
-import { useState } from "react";
-import { Autocomplete, AutocompleteItem, Button, Tooltip } from "@heroui/react";
+'use client';
+import { useState } from 'react';
+import { Autocomplete, AutocompleteItem, Button, Tooltip } from '@heroui/react';
 
-import { Alumno, type Curso } from "@/lib/db";
-import SearchCurso from "./SearchCurso";
-import { CrearAlumnoModal } from "./CrearAlumnoModal";
-import { PlusIcon, TableExportIcon } from "../icons";
-import TableAlumnos from "./TableAlumnos";
-import { EditAlumnoModal } from "./EditAlumnoModal";
-import { DeleteAlumnoModal } from "./DeleteAlumnoModal";
+import { Alumno, type Curso } from '@/lib/db';
+import SearchCurso from './SearchCurso';
+import { CrearAlumnoModal } from './CrearAlumnoModal';
+import { PlusIcon, TableExportIcon } from '../icons';
+import TableAlumnos from './TableAlumnos';
+import { EditAlumnoModal } from './EditAlumnoModal';
+import { DeleteAlumnoModal } from './DeleteAlumnoModal';
 
 interface PanelAlumnos {
   CursosActivosInit: string;
@@ -27,7 +27,7 @@ if (today.getDate() > 30) {
 
 export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
   const [CursosActivos, setCursosActivos] = useState<Curso[]>(
-    JSON.parse(CursosActivosInit)
+    JSON.parse(CursosActivosInit),
   );
 
   const [selectedCurso, setSelectedCurso] = useState<Curso>(CursosActivos[0]);
@@ -39,12 +39,12 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex gap-2 w-full flex-wrap">
+      <div className="flex w-full flex-wrap gap-2">
         <SearchCurso
           OnSelecCurso={(curso) => setSelectedCurso(curso)}
           CursosActivosInit={CursosActivos}
         />
-        <div className="flex gap-2 w-full justify-between flex-wrap">
+        <div className="flex w-full flex-wrap justify-between gap-2">
           <div className="flex gap-2">
             <Button
               onPress={() => setIsCreatingAlumno(true)}
@@ -69,10 +69,10 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
               />
             </Tooltip>
           </div>
-          <div className=" flex gap-2 place-items-center flex-wrap">
+          <div className="flex flex-wrap place-items-center gap-2">
             <span
-              className={`w-2 h-2 rounded-full ${
-                selectedCurso.estado ? "bg-success" : "bg-danger"
+              className={`h-2 w-2 rounded-full ${
+                selectedCurso.estado ? 'bg-success' : 'bg-danger'
               }`}
             >
               &nbsp;
@@ -80,12 +80,12 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
             <p>{new Date(selectedCurso.fechaDeInicio).toLocaleDateString()}</p>
             <p>Alumnos: {selectedCurso.cantidadAlumnos}</p>
             <p className="flex gap-1">
-              Próximo cortes:{" "}
-              <span className=" font-semibold text-success-500">
+              Próximo cortes:{' '}
+              <span className="font-semibold text-success-500">
                 {next15th.toLocaleDateString()}
               </span>
               y
-              <span className=" font-semibold text-success-500">
+              <span className="font-semibold text-success-500">
                 {next30th.toLocaleDateString()}
               </span>
             </p>

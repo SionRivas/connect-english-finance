@@ -1,18 +1,18 @@
 // app/login/github/route.ts
-import { generateState } from "arctic";
-import { github } from "../../../lib/auth";
-import { cookies } from "next/headers";
+import { generateState } from 'arctic';
+import { github } from '../../../lib/auth';
+import { cookies } from 'next/headers';
 
 export async function GET(): Promise<Response> {
   const state = generateState();
-  const url = await github.createAuthorizationURL(state, ["repo", "user"]);
+  const url = await github.createAuthorizationURL(state, ['repo', 'user']);
 
-  (await cookies()).set("github_oauth_state", state, {
-    path: "/",
-    secure: process.env.NODE_ENV === "production",
+  (await cookies()).set('github_oauth_state', state, {
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 60 * 10,
-    sameSite: "lax",
+    sameSite: 'lax',
   });
 
   return Response.redirect(url);

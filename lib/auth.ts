@@ -1,27 +1,27 @@
-import { Lucia, User, Session } from "lucia";
-import { LibSQLAdapter } from "@lucia-auth/adapter-sqlite";
-import { cache } from "react";
+import { Lucia, User, Session } from 'lucia';
+import { LibSQLAdapter } from '@lucia-auth/adapter-sqlite';
+import { cache } from 'react';
 
-import { GitHub, Google } from "arctic";
+import { GitHub, Google } from 'arctic';
 
-import { db } from "./db";
-import { cookies } from "next/headers";
+import { db } from './db';
+import { cookies } from 'next/headers';
 
 export const google = new Google(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  "http://localhost:3000/login/google/callback"
+  'http://localhost:3000/login/google/callback',
 );
 
 export const github = new GitHub(
   process.env.GITHUB_CLIENT_ID!,
   process.env.GITHUB_CLIENT_SECRET!,
-  ""
+  '',
 );
 
 const adapter = new LibSQLAdapter(db, {
-  user: "user",
-  session: "session",
+  user: 'user',
+  session: 'session',
 });
 
 export const lucia = new Lucia(adapter, {
@@ -31,7 +31,7 @@ export const lucia = new Lucia(adapter, {
     expires: false,
     attributes: {
       // set to `true` when using HTTPS
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === 'production',
     },
   },
   getUserAttributes: (attributes) => {
@@ -44,7 +44,7 @@ export const lucia = new Lucia(adapter, {
 });
 
 // IMPORTANT!
-declare module "lucia" {
+declare module 'lucia' {
   interface Register {
     Lucia: typeof lucia;
     DatabaseUserAttributes: DatabaseUserAttributes;
@@ -72,7 +72,7 @@ export const validateRequest = cache(
         (await cookies()).set(
           sessionCookie.name,
           sessionCookie.value,
-          sessionCookie.attributes
+          sessionCookie.attributes,
         );
       }
       if (!result.session) {
@@ -80,12 +80,12 @@ export const validateRequest = cache(
         (await cookies()).set(
           sessionCookie.name,
           sessionCookie.value,
-          sessionCookie.attributes
+          sessionCookie.attributes,
         );
       }
     } catch {}
     return result;
-  }
+  },
 );
 
 interface DatabaseUserAttributes {

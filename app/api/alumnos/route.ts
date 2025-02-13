@@ -3,7 +3,7 @@ import {
   updateAlumno,
   deleteAlumno,
   type Alumno,
-} from "@/lib/db";
+} from '@/lib/db';
 
 export async function POST(request: Request): Promise<Response> {
   try {
@@ -21,53 +21,53 @@ export async function POST(request: Request): Promise<Response> {
     const dia_corte = body.dia_corte;
 
     if (!nombre) {
-      return jsonResponse({ error: "El nombre del alumno es requerido" }, 400);
+      return jsonResponse({ error: 'El nombre del alumno es requerido' }, 400);
     }
     if (!estado) {
-      return jsonResponse({ error: "El estado del alumno es requerido" }, 400);
+      return jsonResponse({ error: 'El estado del alumno es requerido' }, 400);
     }
     if (!numero_contacto_1) {
       return jsonResponse(
-        { error: "El número de contacto 1 del alumno es requerido" },
-        400
+        { error: 'El número de contacto 1 del alumno es requerido' },
+        400,
       );
     }
     if (!mensualidad) {
       return jsonResponse(
-        { error: "La mensualidad del alumno es requerida" },
-        400
+        { error: 'La mensualidad del alumno es requerida' },
+        400,
       );
     }
     if (!inscripcion) {
       return jsonResponse(
-        { error: "La inscripción del alumno es requerida" },
-        400
+        { error: 'La inscripción del alumno es requerida' },
+        400,
       );
     }
     if (!fecha_registro) {
       return jsonResponse(
-        { error: "La fecha de registro del alumno es requerida" },
-        400
+        { error: 'La fecha de registro del alumno es requerida' },
+        400,
       );
     }
     if (!id_curso) {
       return jsonResponse(
-        { error: "El id del curso del alumno es requerido" },
-        400
+        { error: 'El id del curso del alumno es requerido' },
+        400,
       );
     }
     if (!dia_corte) {
       return jsonResponse(
-        { error: "El día de corte del alumno es requerido" },
-        400
+        { error: 'El día de corte del alumno es requerido' },
+        400,
       );
     }
 
-    const fechaTimestamp = new Date(fecha_registro.split("[")[0]).getTime();
+    const fechaTimestamp = new Date(fecha_registro.split('[')[0]).getTime();
     if (isNaN(fechaTimestamp)) {
       return jsonResponse(
-        { error: "El formato de la fecha es incorrecto" },
-        400
+        { error: 'El formato de la fecha es incorrecto' },
+        400,
       );
     }
 
@@ -88,10 +88,10 @@ export async function POST(request: Request): Promise<Response> {
         id: id,
       });
     } catch (e) {
-      return jsonResponse({ error: "Error al crear el alumno" }, 500);
+      return jsonResponse({ error: 'Error al crear el alumno' }, 500);
     }
   } catch (error) {
-    return jsonResponse({ error: "Error al procesar la solicitud" }, 500);
+    return jsonResponse({ error: 'Error al procesar la solicitud' }, 500);
   }
 }
 
@@ -112,56 +112,56 @@ export async function PUT(request: Request): Promise<Response> {
     const dia_corte = body.dia_corte;
 
     if (!id) {
-      return jsonResponse({ error: "El id del alumno es requerido" }, 400);
+      return jsonResponse({ error: 'El id del alumno es requerido' }, 400);
     }
     if (!nombre) {
-      return jsonResponse({ error: "El nombre del alumno es requerido" }, 400);
+      return jsonResponse({ error: 'El nombre del alumno es requerido' }, 400);
     }
-    if (typeof estado !== "boolean") {
-      return jsonResponse({ error: "El estado del alumno es requerido" }, 400);
+    if (typeof estado !== 'boolean') {
+      return jsonResponse({ error: 'El estado del alumno es requerido' }, 400);
     }
     if (!numero_contacto_1) {
       return jsonResponse(
-        { error: "El número de contacto 1 del alumno es requerido" },
-        400
+        { error: 'El número de contacto 1 del alumno es requerido' },
+        400,
       );
     }
     if (!mensualidad) {
       return jsonResponse(
-        { error: "La mensualidad del alumno es requerida" },
-        400
+        { error: 'La mensualidad del alumno es requerida' },
+        400,
       );
     }
     if (!inscripcion) {
       return jsonResponse(
-        { error: "La inscripción del alumno es requerida" },
-        400
+        { error: 'La inscripción del alumno es requerida' },
+        400,
       );
     }
     if (!fecha_registro) {
       return jsonResponse(
-        { error: "La fecha de registro del alumno es requerida" },
-        400
+        { error: 'La fecha de registro del alumno es requerida' },
+        400,
       );
     }
     if (!id_curso) {
       return jsonResponse(
-        { error: "El id del curso del alumno es requerido" },
-        400
+        { error: 'El id del curso del alumno es requerido' },
+        400,
       );
     }
     if (!dia_corte) {
       return jsonResponse(
-        { error: "El día de corte del alumno es requerido" },
-        400
+        { error: 'El día de corte del alumno es requerido' },
+        400,
       );
     }
 
-    const fechaTimestamp = new Date(fecha_registro.split("[")[0]).getTime();
+    const fechaTimestamp = new Date(fecha_registro.split('[')[0]).getTime();
     if (isNaN(fechaTimestamp)) {
       return jsonResponse(
-        { error: "El formato de la fecha es incorrecto" },
-        400
+        { error: 'El formato de la fecha es incorrecto' },
+        400,
       );
     }
 
@@ -179,12 +179,12 @@ export async function PUT(request: Request): Promise<Response> {
         id_curso,
         dia_corte,
       } as Alumno);
-      return jsonResponse({ message: "Alumno actualizado correctamente" });
+      return jsonResponse({ message: 'Alumno actualizado correctamente' });
     } catch (e) {
-      return jsonResponse({ error: "Error al actualizar el alumno" }, 500);
+      return jsonResponse({ error: 'Error al actualizar el alumno' }, 500);
     }
   } catch (error) {
-    return jsonResponse({ error: "Error al procesar la solicitud" }, 500);
+    return jsonResponse({ error: 'Error al procesar la solicitud' }, 500);
   }
 }
 
@@ -194,17 +194,17 @@ export async function DELETE(request: Request): Promise<Response> {
     const id = body.id;
 
     if (!id) {
-      return jsonResponse({ error: "El id del alumno es requerido" }, 400);
+      return jsonResponse({ error: 'El id del alumno es requerido' }, 400);
     }
 
     try {
       await deleteAlumno(id);
-      return jsonResponse({ message: "Alumno eliminado correctamente" });
+      return jsonResponse({ message: 'Alumno eliminado correctamente' });
     } catch (e) {
-      return jsonResponse({ error: "Error al eliminar el alumno" }, 500);
+      return jsonResponse({ error: 'Error al eliminar el alumno' }, 500);
     }
   } catch (error) {
-    return jsonResponse({ error: "Error al procesar la solicitud" }, 500);
+    return jsonResponse({ error: 'Error al procesar la solicitud' }, 500);
   }
 }
 
@@ -212,7 +212,7 @@ function jsonResponse(data: any, status: number = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 }

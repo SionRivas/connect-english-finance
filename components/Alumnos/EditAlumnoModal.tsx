@@ -1,13 +1,13 @@
-"use client";
-import { useState, useEffect, FormEvent } from "react";
-import { now, getLocalTimeZone } from "@internationalized/date";
-import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { DatePicker } from "@heroui/date-picker";
-import { Form } from "@heroui/form";
-import { Select, SelectItem } from "@heroui/react";
-import { Alumno } from "@/lib/db";
+'use client';
+import { useState, useEffect, FormEvent } from 'react';
+import { now, getLocalTimeZone } from '@internationalized/date';
+import { Modal, ModalContent, ModalHeader, ModalBody } from '@heroui/modal';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
+import { DatePicker } from '@heroui/date-picker';
+import { Form } from '@heroui/form';
+import { Select, SelectItem } from '@heroui/react';
+import { Alumno } from '@/lib/db';
 
 interface EditAlumnoModalProps {
   onUpdate: () => void;
@@ -22,24 +22,24 @@ export const EditAlumnoModal = ({
   onClose,
   alumno,
 }: EditAlumnoModalProps) => {
-  const [nombre, setNombre] = useState("");
-  const [encargado, setEncargado] = useState("");
-  const [numeroContacto1, setNumeroContacto1] = useState("");
-  const [numeroContacto2, setNumeroContacto2] = useState("");
-  const [mensualidad, setMensualidad] = useState("");
-  const [inscripcion, setInscripcion] = useState("");
+  const [nombre, setNombre] = useState('');
+  const [encargado, setEncargado] = useState('');
+  const [numeroContacto1, setNumeroContacto1] = useState('');
+  const [numeroContacto2, setNumeroContacto2] = useState('');
+  const [mensualidad, setMensualidad] = useState('');
+  const [inscripcion, setInscripcion] = useState('');
   const [fechaRegistro, setFechaRegistro] = useState(now(getLocalTimeZone()));
-  const [diaCorte, setDiaCorte] = useState("30");
+  const [diaCorte, setDiaCorte] = useState('30');
   const [estado, setEstado] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (alumno) {
       setNombre(alumno.nombre);
-      setEncargado(alumno.encargado || "");
+      setEncargado(alumno.encargado || '');
       setNumeroContacto1(alumno.numero_contacto_1.toString());
-      setNumeroContacto2(alumno.numero_contacto_2?.toString() || "");
+      setNumeroContacto2(alumno.numero_contacto_2?.toString() || '');
       setMensualidad(alumno.mensualidad.toString());
       setInscripcion(alumno.inscripcion.toString());
       setFechaRegistro(
@@ -47,7 +47,7 @@ export const EditAlumnoModal = ({
           year: new Date(alumno.fecha_registro).getFullYear(),
           month: new Date(alumno.fecha_registro).getMonth() + 1,
           day: new Date(alumno.fecha_registro).getDate(),
-        })
+        }),
       );
       setDiaCorte(alumno.dia_corte.toString());
       setEstado(alumno.estado);
@@ -55,17 +55,17 @@ export const EditAlumnoModal = ({
   }, [alumno]);
 
   function handleClose() {
-    setNombre("");
-    setEncargado("");
-    setNumeroContacto1("");
-    setNumeroContacto2("");
-    setMensualidad("");
-    setInscripcion("");
+    setNombre('');
+    setEncargado('');
+    setNumeroContacto1('');
+    setNumeroContacto2('');
+    setMensualidad('');
+    setInscripcion('');
     setFechaRegistro(now(getLocalTimeZone()));
-    setDiaCorte("30");
+    setDiaCorte('30');
     setEstado(true);
     setIsLoading(false);
-    setError("");
+    setError('');
     onClose();
   }
 
@@ -73,11 +73,11 @@ export const EditAlumnoModal = ({
     e.preventDefault();
     if (!alumno) return;
     setIsLoading(true);
-    setError("");
+    setError('');
     fetch(`/api/alumnos`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: alumno.id,
@@ -128,12 +128,12 @@ export const EditAlumnoModal = ({
             </ModalHeader>
             <ModalBody className="flex w-full">
               <Form onSubmit={editarAlumno} validationBehavior="native">
-                <div className="w-full flex flex-col md:flex-row gap-5">
-                  <div className="w-full flex flex-col gap-3">
-                    <p className="text-sm font-semibold text-success-500 mb-3">
+                <div className="flex w-full flex-col gap-5 md:flex-row">
+                  <div className="flex w-full flex-col gap-3">
+                    <p className="mb-3 text-sm font-semibold text-success-500">
                       Información Personal
                     </p>
-                    <div className="flex gap-2 place-items-center">
+                    <div className="flex place-items-center gap-2">
                       <Input
                         autoFocus
                         required
@@ -146,11 +146,11 @@ export const EditAlumnoModal = ({
                       />
                       <Button
                         className=""
-                        color={estado ? "success" : "default"}
+                        color={estado ? 'success' : 'default'}
                         variant="flat"
                         onPress={() => setEstado(!estado)}
                       >
-                        {estado ? "Activo" : "Inactivo"}
+                        {estado ? 'Activo' : 'Inactivo'}
                       </Button>
                     </div>
                     <Input
@@ -162,7 +162,7 @@ export const EditAlumnoModal = ({
                       onChange={(e) => setEncargado(e.target.value)}
                     />
 
-                    <div className="flex gap-2 ">
+                    <div className="flex gap-2">
                       <Input
                         isRequired
                         label="Contacto 1"
@@ -171,7 +171,7 @@ export const EditAlumnoModal = ({
                         type="number"
                         validate={(value) => {
                           if (value.length > 8) {
-                            return "El número de contacto no puede ser mayor a 8 dígitos";
+                            return 'El número de contacto no puede ser mayor a 8 dígitos';
                           }
                         }}
                         value={numeroContacto1}
@@ -184,7 +184,7 @@ export const EditAlumnoModal = ({
                         type="number"
                         validate={(value) => {
                           if (value.length > 8) {
-                            return "El número de contacto no puede ser mayor a 8 dígitos";
+                            return 'El número de contacto no puede ser mayor a 8 dígitos';
                           }
                         }}
                         value={numeroContacto2}
@@ -192,8 +192,8 @@ export const EditAlumnoModal = ({
                       />
                     </div>
                   </div>
-                  <div className="w-full flex flex-col gap-3">
-                    <p className="text-sm font-semibold text-success-500 mb-3">
+                  <div className="flex w-full flex-col gap-3">
+                    <p className="mb-3 text-sm font-semibold text-success-500">
                       Información de Inscripción
                     </p>
                     <Input
@@ -232,14 +232,14 @@ export const EditAlumnoModal = ({
                         selectedKeys={[diaCorte]}
                         onChange={(e) => setDiaCorte(e.target.value)}
                       >
-                        <SelectItem key={"30"}>30</SelectItem>
-                        <SelectItem key={"15"}>15</SelectItem>
+                        <SelectItem key={'30'}>30</SelectItem>
+                        <SelectItem key={'15'}>15</SelectItem>
                       </Select>
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-center text-danger-400">{error}</p>
-                <div className="self-end p-2 mt-5 gap-2 flex">
+                <p className="text-center text-sm text-danger-400">{error}</p>
+                <div className="mt-5 flex gap-2 self-end p-2">
                   <Button color="danger" variant="light" onPress={handleClose}>
                     Cancelar
                   </Button>

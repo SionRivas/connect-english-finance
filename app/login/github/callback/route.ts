@@ -1,17 +1,17 @@
 // app/login/github/callback/route.ts
-import { github, lucia } from "@/lib/auth";
-import { cookies } from "next/headers";
-import { OAuth2RequestError } from "arctic";
-import { generateIdFromEntropySize } from "lucia";
+import { github, lucia } from '@/lib/auth';
+import { cookies } from 'next/headers';
+import { OAuth2RequestError } from 'arctic';
+import { generateIdFromEntropySize } from 'lucia';
 
-import { verifyExistingUser, createUser } from "@/lib/db";
+import { verifyExistingUser, createUser } from '@/lib/db';
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
-  const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
   const storedState =
-    (await cookies()).get("github_oauth_state")?.value ?? null;
+    (await cookies()).get('github_oauth_state')?.value ?? null;
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
       status: 400,
@@ -21,7 +21,7 @@ export async function GET(request: Request): Promise<Response> {
   try {
     const tokens = await github.validateAuthorizationCode(code);
 
-    const githubUserResponse = await fetch("https://api.github.com/user", {
+    const githubUserResponse = await fetch('https://api.github.com/user', {
       headers: {
         Authorization: `Bearer ${tokens.accessToken()}`,
       },
@@ -39,12 +39,12 @@ export async function GET(request: Request): Promise<Response> {
       (await cookies()).set(
         sessionCookie.name,
         sessionCookie.value,
-        sessionCookie.attributes
+        sessionCookie.attributes,
       );
       return new Response(null, {
         status: 302,
         headers: {
-          Location: "/",
+          Location: '/',
         },
       });
     }
@@ -53,19 +53,19 @@ export async function GET(request: Request): Promise<Response> {
 
     // Replace this with your own DB client.
 
-    await createUser(userId, githubUser.login, "", githubUser.id, null);
+    await createUser(userId, githubUser.login, '', githubUser.id, null);
 
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
     (await cookies()).set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes
+      sessionCookie.attributes,
     );
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/",
+        Location: '/',
       },
     });
   } catch (e) {

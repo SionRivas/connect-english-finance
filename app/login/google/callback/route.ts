@@ -1,10 +1,10 @@
 // app/login/github/callback/route.ts
-import { github, google, lucia } from "@/lib/auth";
-import { cookies } from "next/headers";
-import { OAuth2RequestError } from "arctic";
-import { generateIdFromEntropySize } from "lucia";
+import { github, google, lucia } from '@/lib/auth';
+import { cookies } from 'next/headers';
+import { OAuth2RequestError } from 'arctic';
+import { generateIdFromEntropySize } from 'lucia';
 
-import { verifyExistingUser, createUser } from "@/lib/db";
+import { verifyExistingUser, createUser } from '@/lib/db';
 
 interface GoogleUser {
   sub: string; // Unique identifier for the user
@@ -14,12 +14,12 @@ interface GoogleUser {
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
-  const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
   const codeVerifier =
-    (await cookies()).get("google_oauth_code_verifier")?.value ?? null;
+    (await cookies()).get('google_oauth_code_verifier')?.value ?? null;
   const storedState =
-    (await cookies()).get("google_oauth_state")?.value ?? null;
+    (await cookies()).get('google_oauth_state')?.value ?? null;
 
   if (
     !code ||
@@ -35,19 +35,19 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     const tokens = await google.validateAuthorizationCode(code, codeVerifier);
-    console.log("llego0");
+    console.log('llego0');
     const googleUserResponse = await fetch(
-      "https://www.googleapis.com/oauth2/v3/userinfo",
+      'https://www.googleapis.com/oauth2/v3/userinfo',
       {
         headers: {
           Authorization: `Bearer ${tokens.accessToken()}`,
         },
-      }
+      },
     );
 
-    console.log("llego1");
+    console.log('llego1');
     const googleUser: GoogleUser = await googleUserResponse?.json();
-    console.log("llego2");
+    console.log('llego2');
 
     console.log(googleUser);
 
@@ -59,12 +59,12 @@ export async function GET(request: Request): Promise<Response> {
       (await cookies()).set(
         sessionCookie.name,
         sessionCookie.value,
-        sessionCookie.attributes
+        sessionCookie.attributes,
       );
       return new Response(null, {
         status: 302,
         headers: {
-          Location: "/",
+          Location: '/',
         },
       });
     }
@@ -78,7 +78,7 @@ export async function GET(request: Request): Promise<Response> {
       googleUser.name,
       googleUser.email,
       null,
-      googleUser.sub
+      googleUser.sub,
     );
 
     const session = await lucia.createSession(userId, {});
@@ -86,12 +86,12 @@ export async function GET(request: Request): Promise<Response> {
     (await cookies()).set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes
+      sessionCookie.attributes,
     );
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/",
+        Location: '/',
       },
     });
   } catch (e) {

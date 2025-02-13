@@ -1,6 +1,6 @@
-"use client";
-import React from "react";
-import Chart from "react-apexcharts";
+'use client';
+import React from 'react';
+import Chart from 'react-apexcharts';
 
 interface RevenueChartProps {
   categories: string[];
@@ -15,23 +15,23 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
 }) => {
   const options = {
     chart: {
-      type: "bar" as "bar",
+      type: 'bar' as 'bar',
       toolbar: {
         show: false,
       },
     },
     plotOptions: {
       bar: {
-        columnWidth: "50%",
+        columnWidth: '50%',
       },
     },
-    colors: ["#f31260", "#17c964"], // Verde para Ingresos, rosado para Egresos
+    colors: ['#f31260', '#17c964'], // Verde para Ingresos, rosado para Egresos
     dataLabels: {
       enabled: false,
     },
     stroke: {
       width: 1,
-      colors: ["#fff"],
+      colors: ['#fff'],
     },
     legend: {
       show: false,
@@ -41,7 +41,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
     },
     yaxis: {
       title: {
-        text: "Revenue",
+        text: 'Revenue',
       },
     },
     tooltip: {
@@ -52,11 +52,11 @@ const RevenueChart: React.FC<RevenueChartProps> = ({
 
   const series = [
     {
-      name: "Egresos",
+      name: 'Egresos',
       data: egresos, // Egresos (negativos)
     },
     {
-      name: "Ingresos",
+      name: 'Ingresos',
       data: ingresos, // Ingresos
     },
   ];

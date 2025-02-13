@@ -1,5 +1,5 @@
-"use client";
-import React, { useCallback, useState, useMemo } from "react";
+'use client';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
   Table,
   TableHeader,
@@ -15,14 +15,14 @@ import {
   Button,
   DropdownItem,
   DropdownMenu,
-} from "@heroui/react";
-import useSWR from "swr";
+} from '@heroui/react';
+import useSWR from 'swr';
 
-import { type Curso } from "@/lib/db";
-import { DotsVertical, PlusIcon, TableExportIcon } from "../icons";
-import { EditarCursoModal } from "./EditarCursoModal";
-import { DeleteCursoModal } from "./DeleteCursoModal";
-import { CrearCursoModal } from "./CrearCursoModal";
+import { type Curso } from '@/lib/db';
+import { DotsVertical, PlusIcon, TableExportIcon } from '../icons';
+import { EditarCursoModal } from './EditarCursoModal';
+import { DeleteCursoModal } from './DeleteCursoModal';
+import { CrearCursoModal } from './CrearCursoModal';
 
 interface TableCursosProps {
   totalItemsInit: number;
@@ -31,7 +31,7 @@ interface TableCursosProps {
 
 interface SortDescriptor {
   column: keyof Curso | null;
-  direction: "ascending" | "descending";
+  direction: 'ascending' | 'descending';
 }
 
 // Función para hacer fetch de la API
@@ -47,15 +47,15 @@ export default function TableCursos({
   // Estado para el ordenamiento (sobre los datos de la página actual)
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: null,
-    direction: "ascending",
+    direction: 'ascending',
   });
   // Estado para el total de items
   const [totalItems, setTotalItems] = useState(totalItemsInit);
 
   // Función para actualizar el total de items
-  const updateTotalItems = (operation: "add" | "subtract") => {
+  const updateTotalItems = (operation: 'add' | 'subtract') => {
     setTotalItems((prevTotal) =>
-      operation === "add" ? prevTotal + 1 : prevTotal - 1
+      operation === 'add' ? prevTotal + 1 : prevTotal - 1,
     );
   };
   // URL de la API con paginación
@@ -66,10 +66,10 @@ export default function TableCursos({
 
   // Definimos las columnas de la tabla
   const columns = [
-    { key: "nombre", label: "Nombre" },
-    { key: "fechaDeInicio", label: "Fecha de Inicio" },
-    { key: "estado", label: "Estado" },
-    { key: "cantidadAlumnos", label: "Cantidad de Alumnos" },
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'fechaDeInicio', label: 'Fecha de Inicio' },
+    { key: 'estado', label: 'Estado' },
+    { key: 'cantidadAlumnos', label: 'Cantidad de Alumnos' },
   ];
 
   // Ordenamiento de los datos visibles (la API no ordena, se hace en el cliente)
@@ -94,7 +94,7 @@ export default function TableCursos({
         cmp = String(valueA).localeCompare(String(valueB));
       }
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
     });
   }, [data, sortDescriptor]);
 
@@ -106,13 +106,13 @@ export default function TableCursos({
         return {
           column: columnKey,
           direction:
-            prev.direction === "ascending" ? "descending" : "ascending",
+            prev.direction === 'ascending' ? 'descending' : 'ascending',
         };
       }
       // Si se selecciona una columna nueva, se inicia en ascendente
       return {
         column: columnKey,
-        direction: "ascending",
+        direction: 'ascending',
       };
     });
   };
@@ -121,24 +121,24 @@ export default function TableCursos({
   const renderCell = useCallback((curso: Curso, columnKey: React.Key) => {
     const cellValue = curso[columnKey as keyof Curso];
     switch (columnKey) {
-      case "fechaDeInicio":
+      case 'fechaDeInicio':
         return new Date(curso.fechaDeInicio).toLocaleDateString();
-      case "estado":
+      case 'estado':
         return (
           <Chip
             className="capitalize"
-            color={cellValue ? "success" : "danger"}
+            color={cellValue ? 'success' : 'danger'}
             size="sm"
             variant="flat"
           >
-            {cellValue ? "activo" : "inactivo"}
+            {cellValue ? 'activo' : 'inactivo'}
           </Chip>
         );
-      case "cantidadAlumnos":
+      case 'cantidadAlumnos':
         return (
           <div className="relative">
             <span>{cellValue}</span>
-            <span className="absolute top-0 right-0 -mt-1 -mr-1">
+            <span className="absolute right-0 top-0 -mr-1 -mt-1">
               <Dropdown>
                 <DropdownTrigger>
                   <Button
@@ -177,7 +177,7 @@ export default function TableCursos({
   if (error) return <div>Error al cargar los cursos.</div>;
 
   const [selectedCurso, setSelectedCurso] = useState<Curso | null>(
-    sortedItems[0] || null
+    sortedItems[0] || null,
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -195,7 +195,7 @@ export default function TableCursos({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex gap-3 w-full flex-wrap">
+      <div className="flex w-full flex-wrap gap-3">
         <Button
           color="success"
           variant="shadow"
@@ -217,7 +217,7 @@ export default function TableCursos({
       <Table
         aria-label="Tabla de cursos con paginación y ordenamiento"
         classNames={{
-          wrapper: "min-h-[397px]",
+          wrapper: 'min-h-[397px]',
         }}
       >
         <TableHeader>
@@ -257,7 +257,7 @@ export default function TableCursos({
           )}
         </TableBody>
       </Table>
-      <div className="flex justify-start mt-4">
+      <div className="mt-4 flex justify-start">
         <Pagination
           page={page}
           total={totalPages}
@@ -270,11 +270,11 @@ export default function TableCursos({
       <EditarCursoModal
         isOpen={isEditModalOpen}
         onSave={(curso: Curso) => {
-          console.log("Curso guardado", curso);
+          console.log('Curso guardado', curso);
           if (data) {
             // Actualiza el curso en la caché local (sin revalidar)
             const updatedCourses = data.map((c) =>
-              c.id === curso.id ? { ...c, ...curso } : c
+              c.id === curso.id ? { ...c, ...curso } : c,
             );
             mutate(updatedCourses, false);
           }
@@ -290,10 +290,10 @@ export default function TableCursos({
       <DeleteCursoModal
         isOpen={isDeleteModalOpen}
         onDelete={(id) => {
-          console.log("Curso eliminado", id);
+          console.log('Curso eliminado', id);
           // En lugar de actualizar la caché local, se borra y se vuelve a hacer la petición para tener la data actualizada
           mutate();
-          updateTotalItems("subtract");
+          updateTotalItems('subtract');
           setIsDeleteModalOpen(false);
         }}
         onClose={() => {
@@ -304,7 +304,7 @@ export default function TableCursos({
       <CrearCursoModal
         onCreate={() => {
           mutate();
-          updateTotalItems("add");
+          updateTotalItems('add');
         }}
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}

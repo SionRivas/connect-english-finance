@@ -1,5 +1,5 @@
-"use client";
-import React, { useCallback, useState, useMemo } from "react";
+'use client';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
   Table,
   TableHeader,
@@ -14,10 +14,10 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-} from "@heroui/react";
-import useSWR from "swr";
-import { Alumno } from "@/lib/db";
-import { DotsVertical } from "../icons";
+} from '@heroui/react';
+import useSWR from 'swr';
+import { Alumno } from '@/lib/db';
+import { DotsVertical } from '../icons';
 
 interface TableAlumnosProps {
   cursoId: number;
@@ -30,7 +30,7 @@ interface TableAlumnosProps {
 
 interface SortDescriptor {
   column: keyof Alumno | null;
-  direction: "ascending" | "descending";
+  direction: 'ascending' | 'descending';
 }
 
 // Función para hacer fetch de la API
@@ -47,7 +47,7 @@ export default function TableAlumnos({
   // Estado para el ordenamiento (sobre los datos de la página actual)
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: null,
-    direction: "ascending",
+    direction: 'ascending',
   });
 
   // URL de la API con cursoId
@@ -58,12 +58,12 @@ export default function TableAlumnos({
 
   // Definimos las columnas de la tabla
   const columns = [
-    { key: "nombre", label: "Nombre" },
-    { key: "estado", label: "Estado" },
-    { key: "mensualidad", label: "Mensualidad" },
-    { key: "fecha_registro", label: "Fecha de Registro" },
-    { key: "ultimo_pago", label: "Último Pago" },
-    { key: "dia_corte", label: "Día de Corte" },
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'estado', label: 'Estado' },
+    { key: 'mensualidad', label: 'Mensualidad' },
+    { key: 'fecha_registro', label: 'Fecha de Registro' },
+    { key: 'ultimo_pago', label: 'Último Pago' },
+    { key: 'dia_corte', label: 'Día de Corte' },
   ];
 
   // Ordenamiento de los datos visibles (la API no ordena, se hace en el cliente)
@@ -88,7 +88,7 @@ export default function TableAlumnos({
         cmp = String(valueA).localeCompare(String(valueB));
       }
 
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
     });
   }, [data, sortDescriptor]);
 
@@ -100,13 +100,13 @@ export default function TableAlumnos({
         return {
           column: columnKey,
           direction:
-            prev.direction === "ascending" ? "descending" : "ascending",
+            prev.direction === 'ascending' ? 'descending' : 'ascending',
         };
       }
       // Si se selecciona una columna nueva, se inicia en ascendente
       return {
         column: columnKey,
-        direction: "ascending",
+        direction: 'ascending',
       };
     });
   };
@@ -117,10 +117,10 @@ export default function TableAlumnos({
       const cellValue = alumno[columnKey as keyof Alumno];
 
       switch (columnKey) {
-        case "estado": {
+        case 'estado': {
           const totalIngresos = alumno.transacciones.reduce(
             (acc, ingreso) => acc + ingreso.monto,
-            0
+            0,
           );
 
           const fechaRegistro = new Date(alumno.fecha_registro);
@@ -142,38 +142,38 @@ export default function TableAlumnos({
           }
 
           const diasRestantes = Math.ceil(
-            (fechaCorte.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)
+            (fechaCorte.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24),
           );
 
           return (
             <Chip
               color={
                 totalIngresos >= totalDeuda
-                  ? "success"
+                  ? 'success'
                   : diasRestantes <= 8
-                    ? "danger"
-                    : "warning"
+                    ? 'danger'
+                    : 'warning'
               }
             >
               {totalIngresos >= totalDeuda
-                ? "Al corriente"
+                ? 'Al corriente'
                 : diasRestantes <= 5
-                  ? "En mora"
-                  : "Por pagar"}
+                  ? 'En mora'
+                  : 'Por pagar'}
             </Chip>
           );
         }
-        case "fecha_registro":
+        case 'fecha_registro':
           return new Date(alumno.fecha_registro).toLocaleDateString();
-        case "ultimo_pago":
+        case 'ultimo_pago':
           return alumno.transacciones[0]
             ? new Date(alumno.transacciones[0].fecha).toLocaleDateString()
-            : "-";
-        case "dia_corte":
+            : '-';
+        case 'dia_corte':
           return (
             <div className="relative">
-              <span>{alumno.dia_corte === 15 ? "Quincena" : "Fin de mes"}</span>
-              <span className="absolute top-0 right-0 -mt-1 -mr-1">
+              <span>{alumno.dia_corte === 15 ? 'Quincena' : 'Fin de mes'}</span>
+              <span className="absolute right-0 top-0 -mr-1 -mt-1">
                 <Dropdown>
                   <DropdownTrigger>
                     <Button
@@ -208,17 +208,17 @@ export default function TableAlumnos({
             : null;
       }
     },
-    []
+    [],
   );
 
   if (error) return <div>Error al cargar los alumnos.</div>;
 
   return (
-    <div className="flex flex-col gap-5 w-full mt-3">
+    <div className="mt-3 flex w-full flex-col gap-5">
       <Table
         aria-label="Tabla de alumnos con ordenamiento"
         classNames={{
-          base: "w-full",
+          base: 'w-full',
         }}
       >
         <TableHeader>
