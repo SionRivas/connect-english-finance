@@ -37,6 +37,13 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
   const [isEditingAlumno, setIsEditingAlumno] = useState<boolean>(false);
   const [isDeletingAlumno, setIsDeletingAlumno] = useState<boolean>(false);
 
+  const [refreshTable, setRefreshTable] = useState<boolean>(false);
+
+  const handleCreateAlumno = () => {
+    setIsCreatingAlumno(false);
+    setRefreshTable(true);
+  };
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex w-full flex-wrap gap-2">
@@ -105,6 +112,8 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
             setSelectedAlumno(alumno);
             console.log(alumno);
           }}
+          refresh={refreshTable}
+          onRefreshed={() => setRefreshTable(false)}
         />
       </div>
       <CrearAlumnoModal
@@ -112,7 +121,7 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
         onClose={() => {
           setIsCreatingAlumno(false);
         }}
-        onCreate={() => {}}
+        onCreate={handleCreateAlumno}
         cursoID={selectedCurso.id}
       />
       <EditAlumnoModal
@@ -121,7 +130,9 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
           setIsEditingAlumno(false);
           setSelectedAlumno(null);
         }}
-        onUpdate={() => {}}
+        onUpdate={() => {
+          setRefreshTable(true);
+        }}
         alumno={selectedAlumno}
       />
       <DeleteAlumnoModal
@@ -129,7 +140,9 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
         onClose={() => {
           setIsDeletingAlumno(false);
         }}
-        onDelete={() => {}}
+        onDelete={() => {
+          setRefreshTable(true);
+        }}
         alumno={selectedAlumno}
       />
     </div>

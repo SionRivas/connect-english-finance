@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import {
   Table,
   TableHeader,
@@ -26,6 +26,8 @@ interface TableAlumnosProps {
   today: Date;
   next15th: Date;
   next30th: Date;
+  refresh: boolean;
+  onRefreshed: () => void;
 }
 
 interface SortDescriptor {
@@ -43,6 +45,8 @@ export default function TableAlumnos({
   today,
   next15th,
   next30th,
+  refresh,
+  onRefreshed,
 }: TableAlumnosProps) {
   // Estado para el ordenamiento (sobre los datos de la página actual)
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
@@ -54,7 +58,15 @@ export default function TableAlumnos({
   const apiUrl = `/api/alumnos/getByCurso?cursoId=${cursoId}`;
 
   // Uso de SWR para traer los datos
-  const { data, error, isLoading } = useSWR<Alumno[]>(apiUrl, fetcher);
+  const { data, error, isLoading, mutate } = useSWR<Alumno[]>(apiUrl, fetcher);
+
+  // Refrescar los datos cuando se crea un nuevo alumno
+  useEffect(() => {
+    if (refresh) {
+      mutate();
+      onRefreshed();
+    }
+  }, [refresh, mutate, onRefreshed]);
 
   // Definimos las columnas de la tabla
   const columns = [
@@ -117,6 +129,12 @@ export default function TableAlumnos({
       const cellValue = alumno[columnKey as keyof Alumno];
 
       switch (columnKey) {
+        case 'nombre':
+          return (
+            <div className="text-nowrap">
+              <span>{alumno.nombre}</span>
+            </div>
+          );
         case 'estado': {
           const totalIngresos = alumno.transacciones.reduce(
             (acc, ingreso) => acc + ingreso.monto,
@@ -172,8 +190,8 @@ export default function TableAlumnos({
         case 'dia_corte':
           return (
             <div className="relative">
-              <span>{alumno.dia_corte === 15 ? 'Quincena' : 'Fin de mes'}</span>
-              <span className="absolute right-0 top-0 -mr-1 -mt-1">
+              <span>{alumno.dia_corte}</span>
+              <span className="absolu te right-0 top-0 -mr-1 -mt-1">
                 <Dropdown>
                   <DropdownTrigger>
                     <Button

@@ -182,12 +182,6 @@ export default function TableTransacciones({
                     </DropdownItem>
 
                     <DropdownItem
-                      key="edit"
-                      onPress={() => onEdit(transaccion)}
-                    >
-                      Editar
-                    </DropdownItem>
-                    <DropdownItem
                       key="delete"
                       color="danger"
                       className="text-danger"

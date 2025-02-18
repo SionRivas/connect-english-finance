@@ -198,10 +198,19 @@ export async function DELETE(request: Request): Promise<Response> {
     }
 
     try {
-      await deleteAlumno(id);
-      return jsonResponse({ message: 'Alumno eliminado correctamente' });
+      let result = await deleteAlumno(id);
+      if ((result as any).code === 'SQLITE_CONSTRAINT') {
+        return jsonResponse(
+          {
+            error:
+              'No se puede eliminar el alumno porque tiene registros asociados',
+          },
+          400,
+        );
+      }
+      return jsonResponse({}, 200);
     } catch (e) {
-      return jsonResponse({ error: 'Error al eliminar el alumno' }, 500);
+      return jsonResponse({ error: 'Error al eliminar el curso' }, 500);
     }
   } catch (error) {
     return jsonResponse({ error: 'Error al procesar la solicitud' }, 500);
