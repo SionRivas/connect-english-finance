@@ -9,6 +9,7 @@ import { PlusIcon, TableExportIcon } from '../icons';
 import TableAlumnos from './TableAlumnos';
 import { EditAlumnoModal } from './EditAlumnoModal';
 import { DeleteAlumnoModal } from './DeleteAlumnoModal';
+import { InspeccionarAlumnoModal } from './InspeccionarAlumnoModal';
 
 interface PanelAlumnos {
   CursosActivosInit: string;
@@ -36,6 +37,7 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
   const [isCreatingAlumno, setIsCreatingAlumno] = useState<boolean>(false);
   const [isEditingAlumno, setIsEditingAlumno] = useState<boolean>(false);
   const [isDeletingAlumno, setIsDeletingAlumno] = useState<boolean>(false);
+  const [isInspectingAlumno, setIsInspectingAlumno] = useState<boolean>(false);
 
   const [refreshTable, setRefreshTable] = useState<boolean>(false);
 
@@ -62,19 +64,6 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
             >
               Crear Alumno
             </Button>
-            <Tooltip
-              content="Exportar tabla a Excel"
-              showArrow={true}
-              placement="bottom"
-              color="primary"
-            >
-              <Button
-                startContent={<TableExportIcon />}
-                isIconOnly
-                color="primary"
-                variant="shadow"
-              />
-            </Tooltip>
           </div>
           <div className="flex flex-wrap place-items-center gap-2">
             <span
@@ -110,7 +99,10 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
           onEdit={(alumno: Alumno) => {
             setIsEditingAlumno(true);
             setSelectedAlumno(alumno);
-            console.log(alumno);
+          }}
+          onInspect={(alumno: Alumno) => {
+            setIsInspectingAlumno(true);
+            setSelectedAlumno(alumno);
           }}
           refresh={refreshTable}
           onRefreshed={() => setRefreshTable(false)}
@@ -144,6 +136,14 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
           setRefreshTable(true);
         }}
         alumno={selectedAlumno}
+      />
+      <InspeccionarAlumnoModal
+        isOpen={isInspectingAlumno}
+        onClose={() => {
+          setIsInspectingAlumno(false);
+        }}
+        alumno={selectedAlumno}
+        curso={selectedCurso}
       />
     </div>
   );

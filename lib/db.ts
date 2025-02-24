@@ -279,8 +279,6 @@ export const getAlumnosByCurso = async (cursoId: number) => {
             id: alumno.id.toString(),
           },
         });
-        console.log(alumno);
-        console.log(ingresos);
         alumno.transacciones = ingresos.rows as any as Transaccion[];
       }),
     );

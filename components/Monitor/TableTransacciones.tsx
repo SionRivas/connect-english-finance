@@ -229,6 +229,7 @@ export default function TableTransacciones({
           <TableRow
             className="cursor-pointer hover:bg-default-100"
             key={item.id}
+            onDoubleClick={() => onInspection(item)}
           >
             {(columnKey) => (
               <TableCell>{renderCell(item, columnKey)}</TableCell>

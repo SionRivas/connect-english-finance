@@ -13,6 +13,7 @@ import FinancialCard from './FinancialCard';
 import { CrearIngresoModal } from './CrearIngresoModal';
 import { CrearEgresoModal } from './CrearEgresoModal';
 import { InspeccionarTransaccionModal } from './InspeccionarTransaccionModal';
+import { DeleteTransaccionModal } from './DeleteTransaccionModal';
 import TableTransacciones from './TableTransacciones';
 import {
   today,
@@ -24,6 +25,7 @@ import {
 } from '@internationalized/date';
 import { useLocale } from '@react-aria/i18n';
 import { Transaccion } from '@/lib/db';
+
 interface PanelMonitorProps {
   userId: string;
   users: string;
@@ -36,6 +38,7 @@ export default function PanelMonitorGeneral({
   const [isIngresoModalOpen, setIsIngresoModalOpen] = useState(false);
   const [isEgresoModalOpen, setIsEgresoModalOpen] = useState(false);
   const [isInspeccionarModalOpen, setIsInspeccionarModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [selectedTransaccion, setSelectedTransaccion] =
     useState<Transaccion | null>(null);
@@ -59,9 +62,14 @@ export default function PanelMonitorGeneral({
   };
 
   let [value, setValue] = React.useState(thisWeek);
+
+  function handleDelete(transaccionId: Number) {
+    // Lógica para eliminar la transacción de la lista
+    console.log(`Transacción eliminada: ${transaccionId}`);
+  }
+
   return (
     <>
-      {' '}
       <div className="flex w-full flex-col place-items-center gap-5">
         <div className="flex w-full max-w-5xl flex-wrap place-content-between place-items-center gap-2">
           <div className="flex gap-2">
@@ -135,7 +143,10 @@ export default function PanelMonitorGeneral({
                 setIngresos(ingreso);
                 setEgresos(egreso);
               }}
-              onDelete={() => {}}
+              onDelete={(transaccion: Transaccion) => {
+                setSelectedTransaccion(transaccion);
+                setIsDeleteModalOpen(true);
+              }}
               onEdit={() => {}}
               onInspection={(transaccion: Transaccion) => {
                 setSelectedTransaccion(transaccion);
@@ -146,7 +157,7 @@ export default function PanelMonitorGeneral({
           </div>
           <div className="order-first w-full max-w-md lg:order-none">
             <Card className="flex flex-col gap-5 p-7">
-              <FinancialCard ingresos={ingresos} egresos={egresos} />
+              {/* <FinancialCard ingresos={ingresos} egresos={egresos} /> */}
             </Card>
           </div>
         </div>
@@ -168,6 +179,12 @@ export default function PanelMonitorGeneral({
         transaccion={selectedTransaccion}
         isOpen={isInspeccionarModalOpen}
         onClose={() => setIsInspeccionarModalOpen(false)}
+      />
+      <DeleteTransaccionModal
+        transaccion={selectedTransaccion}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDelete}
       />
     </>
   );

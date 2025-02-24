@@ -14,6 +14,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Tooltip,
 } from '@heroui/react';
 import useSWR from 'swr';
 import { Alumno } from '@/lib/db';
@@ -23,6 +24,7 @@ interface TableAlumnosProps {
   cursoId: number;
   onEdit: (alumno: Alumno) => void;
   onDelete: (alumno: Alumno) => void;
+  onInspect: (alumno: Alumno) => void;
   today: Date;
   next15th: Date;
   next30th: Date;
@@ -35,32 +37,27 @@ interface SortDescriptor {
   direction: 'ascending' | 'descending';
 }
 
-// Función para hacer fetch de la API
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function TableAlumnos({
   cursoId,
   onEdit,
   onDelete,
+  onInspect,
   today,
   next15th,
   next30th,
   refresh,
   onRefreshed,
 }: TableAlumnosProps) {
-  // Estado para el ordenamiento (sobre los datos de la página actual)
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: null,
     direction: 'ascending',
   });
 
-  // URL de la API con cursoId
   const apiUrl = `/api/alumnos/getByCurso?cursoId=${cursoId}`;
-
-  // Uso de SWR para traer los datos
   const { data, error, isLoading, mutate } = useSWR<Alumno[]>(apiUrl, fetcher);
 
-  // Refrescar los datos cuando se crea un nuevo alumno
   useEffect(() => {
     if (refresh) {
       mutate();
@@ -68,7 +65,6 @@ export default function TableAlumnos({
     }
   }, [refresh, mutate, onRefreshed]);
 
-  // Definimos las columnas de la tabla
   const columns = [
     { key: 'nombre', label: 'Nombre' },
     { key: 'estado', label: 'Estado' },
@@ -78,44 +74,34 @@ export default function TableAlumnos({
     { key: 'dia_corte', label: 'Día de Corte' },
   ];
 
-  // Ordenamiento de los datos visibles (la API no ordena, se hace en el cliente)
   const sortedItems = useMemo(() => {
     if (!data) return [];
-
     if (!sortDescriptor.column) return data;
-
     return [...data].sort((a, b) => {
       const col = sortDescriptor.column as keyof Alumno;
       const valueA = a[col];
       const valueB = b[col];
-
-      // Intentamos comparar numéricamente, si es posible
       const numA = parseFloat(String(valueA));
       const numB = parseFloat(String(valueB));
-
       let cmp = 0;
       if (!isNaN(numA) && !isNaN(numB)) {
         cmp = numA - numB;
       } else {
         cmp = String(valueA).localeCompare(String(valueB));
       }
-
       return sortDescriptor.direction === 'descending' ? -cmp : cmp;
     });
   }, [data, sortDescriptor]);
 
-  // Manejador para cambiar el ordenamiento (se aplica sobre los datos visibles)
   const onSortChange = (columnKey: keyof Alumno) => {
     setSortDescriptor((prev) => {
       if (prev.column === columnKey) {
-        // Invierte la dirección al hacer click nuevamente en la misma columna
         return {
           column: columnKey,
           direction:
             prev.direction === 'ascending' ? 'descending' : 'ascending',
         };
       }
-      // Si se selecciona una columna nueva, se inicia en ascendente
       return {
         column: columnKey,
         direction: 'ascending',
@@ -123,11 +109,9 @@ export default function TableAlumnos({
     });
   };
 
-  // Renderizado de la celda según la columna
   const renderCell = useCallback(
     (alumno: Alumno, columnKey: React.Key): React.ReactNode => {
       const cellValue = alumno[columnKey as keyof Alumno];
-
       switch (columnKey) {
         case 'nombre':
           return (
@@ -136,49 +120,109 @@ export default function TableAlumnos({
             </div>
           );
         case 'estado': {
+          if (!alumno.estado) {
+            return <Chip color="default">Inactivo</Chip>;
+          }
           const totalIngresos = alumno.transacciones.reduce(
             (acc, ingreso) => acc + ingreso.monto,
             0,
           );
 
           const fechaRegistro = new Date(alumno.fecha_registro);
-          const diaCorte = alumno.dia_corte;
-          const hoy = new Date(today);
+          const dueDay = alumno.dia_corte;
+          const nextPayment =
+            dueDay === 15 ? new Date(next15th) : new Date(next30th);
 
-          let totalDeuda = alumno.inscripcion;
-          let fechaCorte = new Date(fechaRegistro);
+          const getDueDateForMonth = (
+            year: number,
+            month: number,
+            dueDay: number,
+          ) => {
+            const lastDay = new Date(year, month + 1, 0).getDate();
+            return new Date(year, month, Math.min(dueDay, lastDay));
+          };
 
-          while (fechaCorte <= hoy) {
-            console.log(fechaCorte);
-
-            totalDeuda += alumno.mensualidad;
-            if (diaCorte === 15) {
-              fechaCorte.setMonth(fechaCorte.getMonth() + 1);
-            } else if (diaCorte === 30) {
-              fechaCorte.setMonth(fechaCorte.getMonth() + 1);
+          const getFirstPaymentDate = (regDate: Date, dueDay: number) => {
+            const year = regDate.getFullYear();
+            const month = regDate.getMonth();
+            const candidate = getDueDateForMonth(year, month, dueDay);
+            if (regDate.getDate() <= candidate.getDate()) {
+              return candidate;
+            } else {
+              let nextMonth = month + 1;
+              let nextYear = year;
+              if (nextMonth > 11) {
+                nextMonth = 0;
+                nextYear++;
+              }
+              return getDueDateForMonth(nextYear, nextMonth, dueDay);
             }
+          };
+
+          const firstPaymentDate = getFirstPaymentDate(fechaRegistro, dueDay);
+
+          let paymentCount = 0;
+          let paymentDate = firstPaymentDate;
+          while (paymentDate <= nextPayment) {
+            paymentCount++;
+            let nextMonth = paymentDate.getMonth() + 1;
+            let nextYear = paymentDate.getFullYear();
+            if (nextMonth > 11) {
+              nextMonth = 0;
+              nextYear++;
+            }
+            paymentDate = getDueDateForMonth(nextYear, nextMonth, dueDay);
           }
 
-          const diasRestantes = Math.ceil(
-            (fechaCorte.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24),
-          );
+          const totalDeuda =
+            alumno.inscripcion + paymentCount * alumno.mensualidad;
+
+          const diasRestantes = (() => {
+            const deudaMensualidad = alumno.mensualidad;
+            const diff = totalIngresos - totalDeuda;
+            if (diff >= -deudaMensualidad) {
+              return Math.ceil(
+                (nextPayment.getTime() - today.getTime()) /
+                  (1000 * 60 * 60 * 24),
+              );
+            } else {
+              const previousPayment = new Date(nextPayment);
+              previousPayment.setMonth(previousPayment.getMonth() - 1);
+              return (
+                Math.ceil(
+                  (today.getTime() - previousPayment.getTime()) /
+                    (1000 * 60 * 60 * 24),
+                ) * -1
+              );
+            }
+          })();
+
+          console.log(alumno.nombre, totalIngresos, totalDeuda, diasRestantes);
+
+          const diff = totalIngresos - totalDeuda;
+          const montoAbs = Math.abs(diff);
+          let chipColor: 'success' | 'danger' | 'warning';
+          let estadoTexto: string;
+          if (diff >= 0) {
+            chipColor = 'success';
+            estadoTexto = 'Al corriente';
+          } else {
+            chipColor = diasRestantes > 0 ? 'warning' : 'danger';
+            estadoTexto = diasRestantes > 0 ? 'Por pagar' : 'En mora';
+          }
+
+          const detalleTooltip =
+            montoAbs === 0
+              ? '✔'
+              : `${diff >= 0 ? `Crédito: $${montoAbs}` : `Deuda: $${montoAbs}`}
+      ${diasRestantes > 0 ? `Próximo pago en ${diasRestantes} días` : `${Math.abs(diasRestantes)} días de atraso`}`;
 
           return (
-            <Chip
-              color={
-                totalIngresos >= totalDeuda
-                  ? 'success'
-                  : diasRestantes <= 8
-                    ? 'danger'
-                    : 'warning'
-              }
-            >
-              {totalIngresos >= totalDeuda
-                ? 'Al corriente'
-                : diasRestantes <= 5
-                  ? 'En mora'
-                  : 'Por pagar'}
-            </Chip>
+            <Tooltip content={detalleTooltip} placement="right">
+              <Chip color={chipColor} variant="flat">
+                {estadoTexto}
+              </Chip>
+            </Tooltip>
           );
         }
         case 'fecha_registro':
@@ -191,7 +235,7 @@ export default function TableAlumnos({
           return (
             <div className="relative">
               <span>{alumno.dia_corte}</span>
-              <span className="absolu te right-0 top-0 -mr-1 -mt-1">
+              <span className="absolute right-0 top-0 -mr-1 -mt-1">
                 <Dropdown>
                   <DropdownTrigger>
                     <Button
@@ -204,8 +248,14 @@ export default function TableAlumnos({
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu>
+                    <DropdownItem
+                      key="inspect"
+                      onPress={() => onInspect(alumno)}
+                    >
+                      Inspeccionar
+                    </DropdownItem>
                     <DropdownItem key="edit" onPress={() => onEdit(alumno)}>
-                      Edit
+                      Editar
                     </DropdownItem>
                     <DropdownItem
                       key="delete"
@@ -213,7 +263,7 @@ export default function TableAlumnos({
                       className="text-danger"
                       onPress={() => onDelete(alumno)}
                     >
-                      Delete
+                      Eliminar
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -226,7 +276,7 @@ export default function TableAlumnos({
             : null;
       }
     },
-    [],
+    [today, next15th, next30th, onEdit, onDelete, onInspect],
   );
 
   if (error) return <div>Error al cargar los alumnos.</div>;
@@ -235,9 +285,7 @@ export default function TableAlumnos({
     <div className="mt-3 flex w-full flex-col gap-5">
       <Table
         aria-label="Tabla de alumnos con ordenamiento"
-        classNames={{
-          base: 'w-full',
-        }}
+        classNames={{ base: 'w-full' }}
       >
         <TableHeader>
           {columns.map((column) => (
@@ -248,7 +296,6 @@ export default function TableAlumnos({
               onClick={() => onSortChange(column.key as keyof Alumno)}
             >
               {column.label}
-              {/* Aquí podrías agregar un indicador visual de orden si lo deseas */}
             </TableColumn>
           ))}
         </TableHeader>
@@ -262,7 +309,7 @@ export default function TableAlumnos({
             <TableRow
               className="cursor-pointer hover:bg-default-100"
               key={item.id || item.nombre}
-              onDoubleClick={() => onEdit(item)}
+              onDoubleClick={() => onInspect(item)}
               onTouchEnd={(e) => {
                 if (e.detail === 2) {
                   onEdit(item);

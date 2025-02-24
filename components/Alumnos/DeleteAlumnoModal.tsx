@@ -27,11 +27,7 @@ export const DeleteAlumnoModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (alumno) {
-      console.log(`Preparing to delete alumno: ${alumno.nombre}`);
-    }
-  }, [alumno]);
+  useEffect(() => {}, [alumno]);
 
   function handleDelete() {
     setIsLoading(true);

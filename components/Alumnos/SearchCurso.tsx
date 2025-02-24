@@ -59,7 +59,7 @@ export default function SearchCurso({
         {justActive ? <ActivityIcon /> : <JustmidLineIcon />}
       </Button>
       <Autocomplete
-        className="max-w-xs"
+        className="max-w-md"
         defaultItems={CursosActivos}
         defaultSelectedKey={CursosActivos[0].id.toString()}
         onSelectionChange={(id) => handleCursoSelection(id as number)}
