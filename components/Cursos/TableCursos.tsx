@@ -23,6 +23,7 @@ import { DotsVertical, PlusIcon, TableExportIcon } from '../icons';
 import { EditarCursoModal } from './EditarCursoModal';
 import { DeleteCursoModal } from './DeleteCursoModal';
 import { CrearCursoModal } from './CrearCursoModal';
+import { showToast } from '@/scripts/utilities';
 
 interface TableCursosProps {
   totalItemsInit: number;
@@ -250,7 +251,7 @@ export default function TableCursos({
           )}
         </TableBody>
       </Table>
-      <div className="mt-4 flex justify-start">
+      <div className="mt-2 flex justify-start">
         <Pagination
           page={page}
           total={totalPages}
@@ -263,7 +264,6 @@ export default function TableCursos({
       <EditarCursoModal
         isOpen={isEditModalOpen}
         onSave={(curso: Curso) => {
-          console.log('Curso guardado', curso);
           if (data) {
             // Actualiza el curso en la caché local (sin revalidar)
             const updatedCourses = data.map((c) =>
@@ -272,6 +272,11 @@ export default function TableCursos({
             mutate(updatedCourses, false);
           }
           setIsEditModalOpen(false);
+          showToast(
+            'Curso actualizado',
+            'success',
+            'El curso ha sido actualizado con éxito',
+          );
         }}
         onClose={() => {
           setSelectedCurso(null);
@@ -288,6 +293,7 @@ export default function TableCursos({
           mutate();
           updateTotalItems('subtract');
           setIsDeleteModalOpen(false);
+          showToast('Curso eliminado', 'danger');
         }}
         onClose={() => {
           setIsDeleteModalOpen(false);
@@ -298,6 +304,12 @@ export default function TableCursos({
         onCreate={() => {
           mutate();
           updateTotalItems('add');
+          setIsCreateModalOpen(false);
+          showToast(
+            'Curso creado',
+            'success',
+            'El curso ha sido creado con éxito',
+          );
         }}
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}

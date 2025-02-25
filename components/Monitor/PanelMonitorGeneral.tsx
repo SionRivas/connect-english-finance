@@ -26,6 +26,8 @@ import {
 import { useLocale } from '@react-aria/i18n';
 import { Transaccion } from '@/lib/db';
 
+import { showToast } from '@/scripts/utilities';
+
 interface PanelMonitorProps {
   userId: string;
   users: string;
@@ -177,6 +179,11 @@ export default function PanelMonitorGeneral({
         onCreate={() => {
           setIsIngresoModalOpen(false);
           handleRefresh();
+          showToast(
+            'Ingreso creado',
+            'success',
+            'Se ha registrado la transacción',
+          );
         }}
       />
       <CrearEgresoModal
@@ -186,6 +193,11 @@ export default function PanelMonitorGeneral({
         onCreate={() => {
           setIsEgresoModalOpen(false);
           handleRefresh();
+          showToast(
+            'Egreso creado',
+            'success',
+            'Se ha registrado la transacción',
+          );
         }}
       />
       <InspeccionarTransaccionModal
@@ -198,7 +210,11 @@ export default function PanelMonitorGeneral({
         transaccion={selectedTransaccion}
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        onDelete={handleDelete}
+        onDelete={() => {
+          setIsDeleteModalOpen(false);
+          handleDelete(selectedTransaccion?.id as Number);
+          showToast('Transacción eliminada', 'danger');
+        }}
       />
     </>
   );

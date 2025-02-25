@@ -11,6 +11,8 @@ import { EditAlumnoModal } from './EditAlumnoModal';
 import { DeleteAlumnoModal } from './DeleteAlumnoModal';
 import { InspeccionarAlumnoModal } from './InspeccionarAlumnoModal';
 
+import { showToast } from '@/scripts/utilities';
+
 interface PanelAlumnos {
   CursosActivosInit: string;
 }
@@ -113,7 +115,14 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
         onClose={() => {
           setIsCreatingAlumno(false);
         }}
-        onCreate={handleCreateAlumno}
+        onCreate={() => {
+          handleCreateAlumno();
+          showToast(
+            'Alumno creado',
+            'success',
+            'El alumno ha sido creado con éxito',
+          );
+        }}
         cursoID={selectedCurso.id}
       />
       <EditAlumnoModal
@@ -124,6 +133,11 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
         }}
         onUpdate={() => {
           setRefreshTable(true);
+          showToast(
+            'Alumno actualizado',
+            'success',
+            'El alumno ha sido actualizado con éxito',
+          );
         }}
         alumno={selectedAlumno}
       />
@@ -134,6 +148,11 @@ export default function PanelAlumnos({ CursosActivosInit }: PanelAlumnos) {
         }}
         onDelete={() => {
           setRefreshTable(true);
+          showToast(
+            'Alumno eliminado',
+            'danger',
+            'El alumno ha sido eliminado con éxito',
+          );
         }}
         alumno={selectedAlumno}
       />
