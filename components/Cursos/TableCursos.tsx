@@ -122,6 +122,8 @@ export default function TableCursos({
   const renderCell = useCallback((curso: Curso, columnKey: React.Key) => {
     const cellValue = curso[columnKey as keyof Curso];
     switch (columnKey) {
+      case 'nombre':
+        return <span className="text-nowrap">{cellValue}</span>;
       case 'fechaDeInicio':
         return new Date(curso.fechaDeInicio).toLocaleDateString();
       case 'estado':

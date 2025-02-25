@@ -91,14 +91,15 @@ export const InspeccionarTransaccionModal = ({
                     {new Date(fecha).toLocaleDateString()}
                   </p>
                 )}
-                {comentario != null && (
-                  <p className="col-span-2 flex items-center gap-2">
-                    <strong>Comentario:</strong> {comentario}
-                  </p>
-                )}
                 {nombre_alumno != null && (
                   <p className="col-span-2 flex w-full items-center gap-2">
                     <strong>Nombre Alumno:</strong> {nombre_alumno}
+                  </p>
+                )}
+                {comentario != null && (
+                  <p className="col-span-2 flex flex-col gap-2">
+                    <strong>Comentario:</strong>
+                    {comentario}
                   </p>
                 )}
               </div>

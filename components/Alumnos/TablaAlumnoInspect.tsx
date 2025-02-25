@@ -8,6 +8,13 @@ import {
   TableRow,
   TableCell,
   Chip,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Accordion,
+  AccordionItem,
 } from '@heroui/react';
 import { Transaccion } from '@/lib/db';
 
@@ -47,9 +54,23 @@ export const TablaAlumnoInspect = ({
         return <span>${cellValue}</span>;
       case 'comentario':
         return (
-          <span className="block h-6 w-32 overflow-hidden text-ellipsis whitespace-nowrap">
-            {transaccion.comentario ? transaccion.comentario : '-'}
-          </span>
+          <>
+            {transaccion.comentario ? (
+              <Accordion variant="light" className="w-full max-w-md" isCompact>
+                <AccordionItem
+                  key="1"
+                  aria-label="Comentario"
+                  startContent={
+                    <span className="text-default-500">Mostrar</span>
+                  }
+                >
+                  <span className="text-left">{transaccion.comentario}</span>
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              '-'
+            )}
+          </>
         );
       default:
         return cellValue !== null && cellValue !== undefined
