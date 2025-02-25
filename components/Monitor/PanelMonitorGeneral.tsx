@@ -46,6 +46,12 @@ export default function PanelMonitorGeneral({
   const [ingresos, setIngresos] = useState(0);
   const [egresos, setEgresos] = useState(0);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  function handleRefresh() {
+    setRefreshKey((oldKey) => oldKey + 1);
+  }
+
   let { locale } = useLocale();
   let now = today(getLocalTimeZone());
   let thisWeek = {
@@ -66,6 +72,7 @@ export default function PanelMonitorGeneral({
   function handleDelete(transaccionId: Number) {
     // Lógica para eliminar la transacción de la lista
     console.log(`Transacción eliminada: ${transaccionId}`);
+    handleRefresh();
   }
 
   return (
@@ -137,6 +144,7 @@ export default function PanelMonitorGeneral({
         <div className="grid w-full grid-cols-1 gap-5 lg:grid-cols-3">
           <div className="w-full lg:col-span-2">
             <TableTransacciones
+              key={refreshKey}
               startDate={value.start}
               endDate={value.end}
               onUpdated={(ingreso, egreso) => {
@@ -157,7 +165,7 @@ export default function PanelMonitorGeneral({
           </div>
           <div className="order-first w-full max-w-md lg:order-none">
             <Card className="flex flex-col gap-5 p-7">
-              {/* <FinancialCard ingresos={ingresos} egresos={egresos} /> */}
+              <FinancialCard ingresos={ingresos} egresos={egresos} />
             </Card>
           </div>
         </div>
@@ -166,13 +174,19 @@ export default function PanelMonitorGeneral({
         userId={userId}
         isOpen={isIngresoModalOpen}
         onClose={() => setIsIngresoModalOpen(false)}
-        onCreate={() => setIsIngresoModalOpen(false)}
+        onCreate={() => {
+          setIsIngresoModalOpen(false);
+          handleRefresh();
+        }}
       />
       <CrearEgresoModal
         userId={userId}
         isOpen={isEgresoModalOpen}
         onClose={() => setIsEgresoModalOpen(false)}
-        onCreate={() => setIsEgresoModalOpen(false)}
+        onCreate={() => {
+          setIsEgresoModalOpen(false);
+          handleRefresh();
+        }}
       />
       <InspeccionarTransaccionModal
         users={users}

@@ -1,4 +1,8 @@
-import { createTransaccion, type Transaccion } from '@/lib/db';
+import {
+  createTransaccion,
+  deleteTransaccion,
+  type Transaccion,
+} from '@/lib/db';
 
 export async function POST(request: Request): Promise<Response> {
   try {
@@ -61,6 +65,7 @@ export async function POST(request: Request): Promise<Response> {
         );
       }
       transaccion.categoria = categoria;
+      transaccion.id_alumno = null;
     } else {
       return jsonResponse({ error: 'Tipo de transacción no válido' }, 400);
     }
@@ -90,9 +95,34 @@ export async function POST(request: Request): Promise<Response> {
 
     try {
       const id = await createTransaccion(transaccion as Transaccion);
+      console.log('llego');
+      console.log(id);
       return jsonResponse({ id });
     } catch (e) {
       return jsonResponse({ error: 'Error al crear la transacción' }, 500);
+    }
+  } catch (error) {
+    return jsonResponse({ error: 'Error al procesar la solicitud' }, 500);
+  }
+}
+
+export async function DELETE(request: Request): Promise<Response> {
+  try {
+    const body = await request.json();
+    const id = body.id;
+
+    if (!id) {
+      return jsonResponse(
+        { error: 'El id de la transacción es requerido' },
+        400,
+      );
+    }
+
+    try {
+      await deleteTransaccion(id);
+      return jsonResponse({ message: 'Transacción eliminada correctamente' });
+    } catch (e) {
+      return jsonResponse({ error: 'Error al eliminar la transacción' }, 500);
     }
   } catch (error) {
     return jsonResponse({ error: 'Error al procesar la solicitud' }, 500);

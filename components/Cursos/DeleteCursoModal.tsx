@@ -67,6 +67,9 @@ export const DeleteCursoModal = ({
 
   return (
     <Modal
+      classNames={{
+        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
+      }}
       onClose={() => {
         setIsLoading(false);
         setError('');

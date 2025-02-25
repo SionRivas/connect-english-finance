@@ -328,6 +328,20 @@ export const createTransaccion = async (transaccion: Transaccion) => {
   }
 };
 
+export const deleteTransaccion = async (id: number) => {
+  try {
+    await db.execute({
+      sql: `DELETE FROM Transaccion WHERE id = :id`,
+      args: {
+        id: id,
+      },
+    });
+    return true;
+  } catch (e) {
+    return e;
+  }
+};
+
 export const getAllTransacciones = async () => {
   try {
     const transacciones = await db.execute({

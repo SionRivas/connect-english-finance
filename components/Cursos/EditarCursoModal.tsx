@@ -98,6 +98,9 @@ export const EditarCursoModal = ({
 
   return (
     <Modal
+      classNames={{
+        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
+      }}
       onClose={onClose}
       backdrop="blur"
       isOpen={isOpen}

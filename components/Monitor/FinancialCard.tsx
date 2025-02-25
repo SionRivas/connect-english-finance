@@ -1,12 +1,13 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Chart from 'react-apexcharts';
-
 import {
   Button,
   ButtonGroup,
   DateRangePicker,
   RangeCalendar,
+  Chip,
+  Tooltip,
 } from '@heroui/react';
 import { today, getLocalTimeZone, parseDate } from '@internationalized/date';
 
@@ -22,48 +23,55 @@ const FinancialCard = ({
   egresos = 0,
 }: FinancialCardProps) => {
   const [ganancia, setGanancia] = useState(ingresos - egresos);
-  const [porcentajeCrecimiento, setPorcentajeCrecimiento] = useState(
-    ((ganancia / ingresos) * 100).toFixed(1),
-  );
+  const [porcentajeCrecimiento, setPorcentajeCrecimiento] = useState('0.0');
   const [series, setSeries] = useState([0, 0]);
 
   useEffect(() => {
     const newGanancia = ingresos - egresos;
     setGanancia(newGanancia);
-    setPorcentajeCrecimiento(((newGanancia / ingresos) * 100).toFixed(1));
+
+    // Se calcula el porcentaje en base a ingresos (si son mayores a cero)
+    if (ingresos > 0) {
+      setPorcentajeCrecimiento(((newGanancia / ingresos) * 100).toFixed(1));
+    } else {
+      setPorcentajeCrecimiento('0.0');
+    }
     setSeries([ingresos, egresos]);
   }, [ingresos, egresos]);
 
-  const options = {
-    chart: {
-      type: 'donut' as const,
-    },
-    labels: ['Ingresos', 'Egresos'],
-    colors: ['#17c964', '#f31260'],
-    legend: {
-      show: false,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    tooltip: {
-      enabled: false,
-      y: {
-        formatter: (val: { toLocaleString: () => any }) =>
-          `$${val.toLocaleString()}`,
+  const options = useMemo(
+    () => ({
+      chart: {
+        type: 'donut' as const,
       },
-    },
-    responsive: [
-      {
-        breakpoint: 480,
-        options: {
-          chart: {
-            width: '100%',
+      labels: ['Ingresos', 'Egresos'],
+      colors: ['#17c964', '#f31260'],
+      legend: {
+        show: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        colors: ['transparent'],
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: '100%',
+            },
           },
         },
-      },
-    ],
-  };
+      ],
+    }),
+    [ganancia],
+  );
 
   return (
     <div className={ClassName}>
@@ -77,8 +85,13 @@ const FinancialCard = ({
               ${ganancia.toLocaleString()}
             </p>
             <div className="mt-1 flex items-center">
-              <span className="text-sm font-medium text-green-500">
-                +{porcentajeCrecimiento}%
+              <span
+                className={`text-sm font-medium ${
+                  ganancia >= 0 ? 'text-green-500' : 'text-red-500'
+                }`}
+              >
+                {ganancia >= 0 ? '+' : ''}
+                {porcentajeCrecimiento}%
               </span>
               <span className="ml-1 text-xs text-default-500">vs ingresos</span>
             </div>

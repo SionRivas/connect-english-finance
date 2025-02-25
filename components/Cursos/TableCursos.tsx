@@ -205,20 +205,13 @@ export default function TableCursos({
         >
           Crear Curso
         </Button>
-
-        <Button
-          startContent={<TableExportIcon />}
-          color="primary"
-          variant="shadow"
-        >
-          Exportar a Excel
-        </Button>
       </div>
       <Table
         aria-label="Tabla de cursos con paginación y ordenamiento"
         classNames={{
           wrapper: 'min-h-[397px]',
         }}
+        isStriped
       >
         <TableHeader>
           {columns.map((column) => (

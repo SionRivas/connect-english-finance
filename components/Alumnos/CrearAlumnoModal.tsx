@@ -90,6 +90,9 @@ export const CrearAlumnoModal = ({
     <Modal
       onClose={handleClose}
       backdrop="blur"
+      classNames={{
+        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
+      }}
       isOpen={isOpen}
       placement="center"
       scrollBehavior="inside"

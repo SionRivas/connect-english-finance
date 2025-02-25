@@ -74,6 +74,9 @@ export const CrearCursoModal = ({
 
   return (
     <Modal
+      classNames={{
+        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
+      }}
       onClose={handleClose}
       backdrop="blur"
       isOpen={isOpen}

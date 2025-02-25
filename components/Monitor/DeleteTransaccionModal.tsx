@@ -55,7 +55,9 @@ export const DeleteTransaccionModal = ({
         }
       })
       .then((data) => {
-        onDelete(transaccion?.id as Number);
+        setTimeout(() => {
+          onDelete(transaccion?.id as Number);
+        }, 500);
         setIsLoading(false);
         onClose();
       })
@@ -67,6 +69,9 @@ export const DeleteTransaccionModal = ({
 
   return (
     <Modal
+      classNames={{
+        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
+      }}
       onClose={() => {
         setIsLoading(false);
         setError('');

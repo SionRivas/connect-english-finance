@@ -157,8 +157,8 @@ export default function TableTransacciones({
           return transaccion.comentario ? transaccion.comentario : '-';
         case 'id_alumno':
           return (
-            <div className="relative">
-              <span>
+            <div className="relative pr-5">
+              <span className="text-nowrap">
                 {transaccion.nombre_alumno ? transaccion.nombre_alumno : '-'}
               </span>
               <span className="absolute right-0 top-0 -mr-1 -mt-1">
@@ -227,7 +227,7 @@ export default function TableTransacciones({
       >
         {(item: Transaccion) => (
           <TableRow
-            className="cursor-pointer hover:bg-default-100"
+            className="cursor-pointer hover:bg-default-200"
             key={item.id}
             onDoubleClick={() => onInspection(item)}
           >

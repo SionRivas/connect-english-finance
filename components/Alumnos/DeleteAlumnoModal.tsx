@@ -68,6 +68,9 @@ export const DeleteAlumnoModal = ({
         setError('');
         onClose();
       }}
+      classNames={{
+        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
+      }}
       backdrop="blur"
       isOpen={isOpen}
       placement="center"

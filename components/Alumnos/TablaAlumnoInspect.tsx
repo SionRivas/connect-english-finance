@@ -65,7 +65,7 @@ export const TablaAlumnoInspect = ({
         isStriped
         classNames={{
           base: 'w-full',
-          wrapper: ' shadow-none  rounded-lg p-0 ',
+          wrapper: 'shadow-none  rounded-lg p-0',
         }}
       >
         <TableHeader>
@@ -80,7 +80,7 @@ export const TablaAlumnoInspect = ({
           emptyContent="No Existen Transacciones"
         >
           {(item: Transaccion) => (
-            <TableRow key={item.id} className="hover:bg-gray-100">
+            <TableRow key={item.id} className="rounded-lg hover:bg-default-200">
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey)}</TableCell>
               )}
