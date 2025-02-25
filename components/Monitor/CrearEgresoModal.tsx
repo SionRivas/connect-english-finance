@@ -82,11 +82,8 @@ export const CrearEgresoModal = ({
 
   return (
     <Modal
-      classNames={{
-        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
-      }}
+      backdrop="opaque"
       onClose={handleClose}
-      backdrop="blur"
       isOpen={isOpen}
       placement="center"
       className="overflow-hidden"

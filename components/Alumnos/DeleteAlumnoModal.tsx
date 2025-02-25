@@ -68,10 +68,7 @@ export const DeleteAlumnoModal = ({
         setError('');
         onClose();
       }}
-      classNames={{
-        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
-      }}
-      backdrop="blur"
+      backdrop="opaque"
       isOpen={isOpen}
       placement="center"
       className="overflow-hidden"

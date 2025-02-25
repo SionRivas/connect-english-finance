@@ -37,10 +37,7 @@ export const InspeccionarTransaccionModal = ({
   return (
     <Modal
       onClose={onClose}
-      backdrop="blur"
-      classNames={{
-        backdrop: 'sm:backdrop-opacity-100 backdrop-opacity-0',
-      }}
+      backdrop="opaque"
       isOpen={isOpen}
       className="overflow-hidden"
       placement="center"
