@@ -82,14 +82,14 @@ export const InspeccionarAlumnoModal = ({
 
                 <div className="flex place-content-center place-items-end justify-between gap-2">
                   <p className="">Transacciones:</p>
-
+                  {/* 
                   <Button
                     startContent={<TableExportIcon />}
                     color="primary"
                     variant="flat"
                   >
                     Exportar a Excel
-                  </Button>
+                  </Button> */}
                 </div>
                 <TablaAlumnoInspect transacciones={alumno.transacciones} />
               </div>
