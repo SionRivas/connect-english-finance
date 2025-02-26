@@ -27,6 +27,7 @@ import { useLocale } from '@react-aria/i18n';
 import { Transaccion } from '@/lib/db';
 
 import { showToast } from '@/scripts/utilities';
+import { CreateExcelTransacciones } from './CreateExcelTransacciones';
 
 interface PanelMonitorProps {
   userId: string;
@@ -73,7 +74,6 @@ export default function PanelMonitorGeneral({
 
   function handleDelete(transaccionId: Number) {
     // Lógica para eliminar la transacción de la lista
-    console.log(`Transacción eliminada: ${transaccionId}`);
     handleRefresh();
   }
 
@@ -100,19 +100,11 @@ export default function PanelMonitorGeneral({
             >
               Egreso
             </Button>
-            <Tooltip
-              content="Exportar tabla a Excel"
-              showArrow={true}
-              placement="bottom"
-              color="primary"
-            >
-              <Button
-                startContent={<TableExportIcon />}
-                isIconOnly
-                color="primary"
-                variant="shadow"
-              />
-            </Tooltip>
+
+            <CreateExcelTransacciones
+              startDate={value.start}
+              endDate={value.end}
+            />
           </div>
 
           <div className="flex flex-wrap place-items-end gap-1 md:flex-nowrap md:gap-4">
@@ -123,7 +115,6 @@ export default function PanelMonitorGeneral({
               value={value}
               onChange={(date) => {
                 date && setValue(date);
-                console.log(date);
               }}
               label="Rango de fechas"
             />
@@ -161,13 +152,12 @@ export default function PanelMonitorGeneral({
               onInspection={(transaccion: Transaccion) => {
                 setSelectedTransaccion(transaccion);
                 setIsInspeccionarModalOpen(true);
-                console.log(transaccion);
               }}
             />
           </div>
           <div className="order-first w-full max-w-md lg:order-none">
             <Card className="flex flex-col gap-5 p-7">
-              <FinancialCard ingresos={ingresos} egresos={egresos} />
+              {/* <FinancialCard ingresos={ingresos} egresos={egresos} /> */}
             </Card>
           </div>
         </div>

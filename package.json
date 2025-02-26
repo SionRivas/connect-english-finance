@@ -38,6 +38,7 @@
     "arctic": "^3.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "excel4node": "^1.8.2",
     "framer-motion": "11.13.1",
     "intl-messageformat": "^10.5.0",
     "lucia": "^3.2.2",
