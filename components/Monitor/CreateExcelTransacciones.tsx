@@ -114,7 +114,7 @@ export const CreateExcelTransacciones: React.FC<
             <Button
               className="mt-4 w-full"
               color="primary"
-              variant="solid"
+              variant="shadow"
               isLoading={isLoading}
               onClick={handleExport}
             >
