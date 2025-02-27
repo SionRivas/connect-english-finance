@@ -34,7 +34,7 @@ export default function RootLayout({
     <ViewTransitions>
       <html suppressHydrationWarning lang="es">
         <head>
-          <meta name="theme-color" content="white" />
+          <meta name="theme-color" content="black" />
         </head>
         <body
           className={clsx(
