@@ -7,9 +7,9 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from '@heroui/navbar';
-import { Link } from '@heroui/link';
+import { Link } from 'next-view-transitions';
 import { link as linkStyles } from '@heroui/theme';
-import NextLink from 'next/link';
+
 import clsx from 'clsx';
 import { Image } from '@heroui/image';
 
@@ -28,6 +28,27 @@ export const Navbar = ({ username }: NavbarProps) => {
     <HeroUINavbar maxWidth="xl" position="sticky" shouldHideOnScroll>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
+          {/* <div className="flex gap-1">
+            <div className="flex h-10 w-10 items-center justify-center">
+              <Image
+                alt="Card background"
+                className="logoImageWhite object-cover backdrop-grayscale-0"
+                src="/white.png"
+                width={50}
+                isBlurred
+              />
+              <Image
+                alt="Card background"
+                className="logoImageColor object-cover backdrop-grayscale-0"
+                src="/color.png"
+                width={50}
+              />
+            </div>
+            <div>
+              <p className="font-bold text-inherit">Monitor</p>
+              <p className="-mt-1 text-xs text-inherit">Financiero</p>
+            </div>
+          </div> */}
           <div>
             <p className="font-bold text-inherit">Connect English</p>
             <p className="text-xs text-inherit">Monitor Financiero</p>
@@ -43,7 +64,7 @@ export const Navbar = ({ username }: NavbarProps) => {
           <ul className="ml-2 flex justify-start gap-4">
             {siteConfig.navItems.map((item) => (
               <NavbarItem key={item.href}>
-                <NextLink
+                <Link
                   className={clsx(
                     linkStyles({ color: 'foreground' }),
                     'data-[active=true]:font-medium data-[active=true]:text-primary',
@@ -52,7 +73,7 @@ export const Navbar = ({ username }: NavbarProps) => {
                   href={item.href}
                 >
                   {item.label}
-                </NextLink>
+                </Link>
               </NavbarItem>
             ))}
           </ul>
@@ -87,7 +108,6 @@ export const Navbar = ({ username }: NavbarProps) => {
               <Link
                 color={item.href === '/cursos' ? 'primary' : 'foreground'}
                 href={item.href}
-                size="lg"
               >
                 {item.label}
               </Link>

@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import { ViewTransitions } from 'next-view-transitions';
 import { Metadata, Viewport } from 'next';
 import clsx from 'clsx';
 import { Providers } from './providers';
@@ -30,19 +31,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="es">
-      <head />
-      <body
-        className={clsx(
-          'min-h-screen font-sans antialiased',
-          fontSans.variable,
-          'relative flex h-screen flex-col',
-        )}
-      >
-        <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
-          {children}
-        </Providers>
-      </body>
-    </html>
+    <ViewTransitions>
+      <html suppressHydrationWarning lang="es">
+        <head>
+          <meta name="theme-color" content="white" />
+        </head>
+        <body
+          className={clsx(
+            'min-h-screen font-sans antialiased',
+            fontSans.variable,
+            'relative flex h-screen flex-col',
+          )}
+        >
+          <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
+            <div className="fixed z-[-1] h-screen w-full bg-gradient-to-b from-background to-default-50" />
+
+            {children}
+          </Providers>
+        </body>
+      </html>
+    </ViewTransitions>
   );
 }

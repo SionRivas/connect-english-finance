@@ -1,6 +1,6 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { SwitchProps, useSwitch } from '@heroui/switch';
 import { useTheme } from 'next-themes';
@@ -20,6 +20,16 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 }) => {
   const { theme, setTheme } = useTheme();
   const isSSR = useIsSSR();
+
+  useEffect(() => {
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute(
+        'content',
+        theme === 'light' ? 'white' : 'black',
+      );
+    }
+  }, [theme]);
 
   const onChange = () => {
     theme === 'light' ? setTheme('dark') : setTheme('light');

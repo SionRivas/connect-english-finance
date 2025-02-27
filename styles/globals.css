@@ -26,3 +26,14 @@
 ::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
+
+.dark {
+  .logoImageColor {
+    display: none;
+  }
+}
+.light {
+  .logoImageWhite {
+    display: none;
+  }
+}
