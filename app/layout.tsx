@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: '/LOGOTIPO_PRINCIPAL.png',
+    icon: '/color.png',
   },
 };
 
