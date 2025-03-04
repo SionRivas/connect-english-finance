@@ -131,6 +131,13 @@ export const CrearEgresoModal = ({
                       variant="underlined"
                       type="number"
                       value={monto}
+                      validate={(value) => {
+                        if (value === '') {
+                          return 'El monto es requerido';
+                        } else if (parseFloat(value) <= 0) {
+                          return 'El monto debe ser mayor a cero';
+                        }
+                      }}
                       onChange={(e) => setMonto(e.target.value)}
                     />
                     <DatePicker
