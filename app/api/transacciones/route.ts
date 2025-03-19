@@ -43,16 +43,30 @@ export async function POST(request: Request): Promise<Response> {
         );
       }
       transaccion.categoria = categoria;
-
-      if (categoria === 'Mensualidad' || categoria === 'Inscripcion') {
+      const metodo_pago = body.metodo_pago || null;
+      if (!metodo_pago) {
+        return jsonResponse({ error: 'El método de pago es requerido' }, 400);
+      }
+      transaccion.metodo_pago = metodo_pago;
+      let n_recibo = body.n_recibo || null;
+      if (n_recibo) {
+        n_recibo = n_recibo.replace(/^0+/, '');
+      }
+      if (!n_recibo) {
+        return jsonResponse({ error: 'El número de recibo es requerido' }, 400);
+      }
+      transaccion.n_recibo = n_recibo;
+      if (categoria === 1 || categoria === 2) {
         const id_alumno = body.id_alumno || null;
         if (!id_alumno) {
           return jsonResponse({ error: 'El id del alumno es requerido' }, 400);
         }
         transaccion.id_alumno = id_alumno;
-      } else if (categoria !== 'otros') {
+      } else if (categoria == 3) {
+        transaccion.id_alumno = null;
+      } else {
         return jsonResponse(
-          { error: 'Categoría no válida para ingresos' },
+          { error: 'La categoría de la transacción no es válida' },
           400,
         );
       }
@@ -66,6 +80,8 @@ export async function POST(request: Request): Promise<Response> {
       }
       transaccion.categoria = categoria;
       transaccion.id_alumno = null;
+      transaccion.metodo_pago = null;
+      transaccion.n_recibo = null;
     } else {
       return jsonResponse({ error: 'Tipo de transacción no válido' }, 400);
     }
@@ -94,6 +110,8 @@ export async function POST(request: Request): Promise<Response> {
     transaccion.fecha = fechaTimestamp;
 
     try {
+      console.log(transaccion);
+
       const id = await createTransaccion(transaccion as Transaccion);
       console.log('llego');
       console.log(id);

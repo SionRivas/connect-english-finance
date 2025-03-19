@@ -9,6 +9,7 @@ import { Form } from '@heroui/form';
 import { Select, SelectItem, Textarea } from '@heroui/react';
 import { BorderBeam } from '../ui/border-beam';
 import { Curso, Alumno, Transaccion } from '@/lib/db';
+import { MetodosPago, CategoriasIngresos } from '@/lib/constantes';
 
 interface CrearIngresoModalProps {
   onCreate: (transaccion: Transaccion) => void;
@@ -25,10 +26,11 @@ export const CrearIngresoModal = ({
 }: CrearIngresoModalProps) => {
   // Campos del formulario
   const [idAlumno, setIdAlumno] = useState('');
-  const [categoria, setCategoria] = useState('Mensualidad'); // Valor por defecto
+  const [categoria, setCategoria] = useState(CategoriasIngresos[0].id); // Valor por defecto
   const [monto, setMonto] = useState('');
   const [fecha, setFecha] = useState(now(getLocalTimeZone()));
-
+  const [metodo_pago, setMetodoPago] = useState(1);
+  const [n_recibo, setNumeroRecibo] = useState('');
   const [comentario, setComentario] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -59,7 +61,9 @@ export const CrearIngresoModal = ({
   function handleClose() {
     // Reiniciamos los estados y cerramos el modal
     setIdAlumno('');
-    setCategoria('Mensualidad');
+    setCategoria(CategoriasIngresos[0].id);
+    setMetodoPago(1);
+    setNumeroRecibo('');
     setMonto('');
     setFecha(now(getLocalTimeZone()));
     setComentario('');
@@ -77,6 +81,8 @@ export const CrearIngresoModal = ({
       id_user: userId,
       tipo: 1, // Ingreso
       categoria, // "Mensualidad", "Inscripcion" o "Otros"
+      metodo_pago: metodo_pago,
+      n_recibo,
       monto: parseFloat(monto),
       fecha: fecha.toString(),
       comentario: comentario || null,
@@ -139,10 +145,12 @@ export const CrearIngresoModal = ({
                       className="min-w-32 max-w-32"
                       color="success"
                       variant="underlined"
-                      defaultSelectedKeys={['Mensualidad']}
+                      defaultSelectedKeys={[
+                        CategoriasIngresos[0].id.toString(),
+                      ]}
                       onSelectionChange={(key) => {
-                        setCategoria(key?.currentKey ?? 'Mensualidad');
-                        if (key?.currentKey === 'Mensualidad') {
+                        setCategoria(Number(key?.currentKey ?? 1));
+                        if (key?.currentKey === '1') {
                           setMonto(
                             alumnos
                               .find(
@@ -151,7 +159,7 @@ export const CrearIngresoModal = ({
                               )
                               ?.mensualidad.toString() ?? '',
                           );
-                        } else if (key?.currentKey === 'Inscripcion') {
+                        } else if (key?.currentKey === '2') {
                           setMonto(
                             alumnos
                               .find(
@@ -162,20 +170,27 @@ export const CrearIngresoModal = ({
                           );
                         }
 
-                        if (key?.currentKey === 'Otros') {
+                        if (key?.currentKey === '3') {
                           setMonto('');
+                          setSelectedCurso(null);
+                          setIdAlumno('');
                         }
                       }}
                     >
-                      <SelectItem key="Mensualidad">Mensualidad</SelectItem>
-                      <SelectItem key="Inscripcion">Inscripción</SelectItem>
-                      <SelectItem key="Otros">Otros</SelectItem>
+                      {CategoriasIngresos.map((categoria) => (
+                        <SelectItem
+                          key={categoria.id}
+                          textValue={categoria.nombre}
+                        >
+                          {categoria.nombre}
+                        </SelectItem>
+                      ))}
                     </Select>
                     <Select
-                      isRequired={categoria !== 'Otros'}
+                      isRequired={categoria !== 3}
                       label="Curso"
-                      isDisabled={categoria === 'Otros'}
                       variant="underlined"
+                      isDisabled={categoria === 3}
                       onSelectionChange={(key) => {
                         setSelectedCurso(key?.currentKey ?? null);
                       }}
@@ -189,13 +204,14 @@ export const CrearIngresoModal = ({
                   </div>
 
                   <Select
-                    isRequired={categoria !== 'Otros'}
+                    isRequired={categoria !== 3}
                     label="Alumno"
                     variant="underlined"
+                    isDisabled={!selectedCurso || categoria === 3}
                     onSelectionChange={(key) => {
                       setIdAlumno(key.anchorKey?.toString() ?? '');
 
-                      if (categoria === 'Mensualidad') {
+                      if (categoria === 1) {
                         setMonto(
                           alumnos
                             .find(
@@ -205,7 +221,7 @@ export const CrearIngresoModal = ({
                             )
                             ?.mensualidad.toString() ?? '',
                         );
-                      } else if (categoria === 'Inscripcion') {
+                      } else if (categoria === 2) {
                         setMonto(
                           alumnos
                             .find(
@@ -217,7 +233,6 @@ export const CrearIngresoModal = ({
                         );
                       }
                     }}
-                    isDisabled={!selectedCurso || categoria === 'Otros'}
                   >
                     {alumnos.map((alumno) => (
                       <SelectItem key={alumno.id} textValue={alumno.nombre}>
@@ -250,6 +265,33 @@ export const CrearIngresoModal = ({
                       value={fecha}
                       onChange={(date) => date && setFecha(date)}
                       granularity="day"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Select
+                      isRequired
+                      label="Método de Pago"
+                      variant="underlined"
+                      color="success"
+                      defaultSelectedKeys={['1']}
+                      onSelectionChange={(key) =>
+                        setMetodoPago(Number(key?.currentKey))
+                      }
+                    >
+                      {MetodosPago.map((metodo) => (
+                        <SelectItem key={metodo.id} textValue={metodo.nombre}>
+                          <span className="text-xs">{metodo.nombre}</span>
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    <Input
+                      isRequired
+                      label="Nº de Recibo"
+                      placeholder="Ingrese el número de recibo"
+                      variant="underlined"
+                      type="number"
+                      value={n_recibo}
+                      onChange={(e) => setNumeroRecibo(e.target.value)}
                     />
                   </div>
 

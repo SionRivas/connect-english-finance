@@ -9,6 +9,7 @@ import { Form } from '@heroui/form';
 import { Select, SelectItem, Textarea } from '@heroui/react';
 import { BorderBeam } from '../ui/border-beam';
 import { Transaccion } from '@/lib/db';
+import { CategoriasEgresos } from '@/lib/constantes';
 
 interface CrearEgresoModalProps {
   onCreate: (transaccion: Transaccion) => void;
@@ -24,7 +25,7 @@ export const CrearEgresoModal = ({
   userId,
 }: CrearEgresoModalProps) => {
   // Campos del formulario
-  const [categoria, setCategoria] = useState('Luz'); // Valor por defecto
+  const [categoria, setCategoria] = useState(CategoriasEgresos[0].id); // Valor por defecto
   const [monto, setMonto] = useState('');
   const [fecha, setFecha] = useState(now(getLocalTimeZone()));
   const [comentario, setComentario] = useState('');
@@ -32,7 +33,7 @@ export const CrearEgresoModal = ({
   const [error, setError] = useState('');
 
   function handleClose() {
-    setCategoria('Luz');
+    setCategoria(CategoriasEgresos[0].id);
     setMonto('');
     setFecha(now(getLocalTimeZone()));
     setComentario('');
@@ -110,18 +111,16 @@ export const CrearEgresoModal = ({
                     label="Categoría"
                     color="danger"
                     variant="underlined"
-                    defaultSelectedKeys={['Luz']}
+                    defaultSelectedKeys={[CategoriasEgresos[0].id.toString()]}
                     onSelectionChange={(key) => {
-                      setCategoria(key?.currentKey ?? 'Luz');
+                      setCategoria(Number(key?.currentKey ?? 1));
                     }}
                   >
-                    <SelectItem key="Luz">Luz</SelectItem>
-                    <SelectItem key="Agua">Agua</SelectItem>
-                    <SelectItem key="Salario">Salario</SelectItem>
-                    <SelectItem key="Impuestos">Impuestos</SelectItem>
-                    <SelectItem key="Alquiler">Alquiler</SelectItem>
-                    <SelectItem key="Internet">Internet</SelectItem>
-                    <SelectItem key="Otros">Otros</SelectItem>
+                    {CategoriasEgresos.map((categoria) => (
+                      <SelectItem key={categoria.id} value={categoria.nombre}>
+                        {categoria.nombre}
+                      </SelectItem>
+                    ))}
                   </Select>
                   <div className="flex gap-2">
                     <Input

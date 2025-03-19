@@ -3,6 +3,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody } from '@heroui/modal';
 import { Button } from '@heroui/button';
 import { BorderBeam } from '../ui/border-beam';
 import { Transaccion } from '@/lib/db';
+import { Categorias, MetodosPago } from '@/lib/constantes';
 
 interface InspeccionarTransaccionModalProps {
   transaccion: Transaccion | null;
@@ -25,6 +26,8 @@ export const InspeccionarTransaccionModal = ({
     id_user,
     tipo,
     categoria,
+    metodo_pago,
+    n_recibo,
     monto,
     fecha,
     comentario,
@@ -66,7 +69,8 @@ export const InspeccionarTransaccionModal = ({
                 )}
                 {categoria !== undefined && (
                   <p className="flex items-center gap-2">
-                    <strong>Categoría:</strong> {categoria}
+                    <strong>Categoría:</strong>{' '}
+                    {Categorias.find((c) => c.id === categoria)?.nombre}
                   </p>
                 )}
                 {monto !== undefined && (
@@ -89,6 +93,18 @@ export const InspeccionarTransaccionModal = ({
                   <p className="flex items-center gap-2">
                     <strong>Fecha:</strong>{' '}
                     {new Date(fecha).toLocaleDateString()}
+                  </p>
+                )}
+                {metodo_pago !== undefined && (
+                  <p className="flex items-center gap-2">
+                    <strong>Método de Pago:</strong>{' '}
+                    {MetodosPago.find((m) => m.id === metodo_pago)?.nombre}
+                  </p>
+                )}
+                {n_recibo !== undefined && (
+                  <p className="flex items-center gap-2">
+                    <strong>Número de Recibo:</strong>{' '}
+                    {n_recibo?.toString().padStart(4, '0')}
                   </p>
                 )}
                 {nombre_alumno != null && (

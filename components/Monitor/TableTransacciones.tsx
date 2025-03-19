@@ -19,6 +19,7 @@ import {
 import useSWR from 'swr';
 import { Transaccion } from '@/lib/db'; // Asegúrate de que la ruta sea la correcta
 import { DotsVertical } from '../icons';
+import { MetodosPago, Categorias } from '@/lib/constantes';
 
 // Interfaz para las props de la tabla (en este ejemplo no requerimos props adicionales)
 interface TableTransaccionesProps {
@@ -90,6 +91,8 @@ export default function TableTransacciones({
     { key: 'categoria', label: 'Categoría' },
     { key: 'monto', label: 'Monto' },
     { key: 'fecha', label: 'Fecha' },
+    { key: 'metodo_pago', label: 'Método de Pago' },
+    { key: 'n_recibo', label: 'Recibo' },
     { key: 'id_alumno', label: 'Asociado' },
   ];
 
@@ -149,12 +152,31 @@ export default function TableTransacciones({
           ) : (
             cellValue
           );
+        case 'categoria':
+          return (
+            Categorias.find((categoria) => categoria.id === cellValue)
+              ?.nombre ?? '-'
+          );
+
         case 'fecha':
           return new Date(transaccion.fecha).toLocaleDateString();
         case 'monto':
           return <span>${cellValue}</span>;
         case 'comentario':
           return transaccion.comentario ? transaccion.comentario : '-';
+        case 'metodo_pago':
+          return (
+            <span>
+              <Chip size="sm" variant="flat">
+                {MetodosPago.find((metodo) => metodo.id === cellValue)
+                  ?.nombre ?? '-'}
+              </Chip>
+            </span>
+          );
+        case 'n_recibo':
+          return transaccion.n_recibo
+            ? transaccion.n_recibo.toString().padStart(4, '0')
+            : '-';
         case 'id_alumno':
           return (
             <div className="relative pr-5">

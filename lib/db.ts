@@ -309,14 +309,16 @@ export const createTransaccion = async (transaccion: Transaccion) => {
   try {
     let resp = await db.execute({
       sql: `INSERT INTO Transaccion 
-        (id_alumno, id_user, tipo, categoria, monto, fecha, comentario)
+        (id_alumno, id_user, tipo, categoria, metodo_pago, n_recibo, monto, fecha, comentario)
         VALUES
-        (:id_alumno, :id_user, :tipo, :categoria, :monto, :fecha, :comentario)`,
+        (:id_alumno, :id_user, :tipo, :categoria, :metodo_pago, :n_recibo, :monto, :fecha, :comentario)`,
       args: {
         id_alumno: transaccion.id_alumno,
         id_user: transaccion.id_user,
         tipo: transaccion.tipo,
         categoria: transaccion.categoria,
+        metodo_pago: transaccion.metodo_pago,
+        n_recibo: transaccion.n_recibo,
         monto: transaccion.monto,
         fecha: transaccion.fecha,
         comentario: transaccion.comentario,
@@ -385,6 +387,7 @@ export interface DatabaseUser {
   email: string;
   github_id: string;
   google_id: string;
+  password: string;
 }
 
 export interface Curso {
@@ -417,8 +420,10 @@ export interface Transaccion {
   id_user: string;
   user_name: string;
   tipo: number;
-  categoria: string;
+  categoria: number;
+  metodo_pago: number | null;
+  n_recibo: number | null;
   monto: number;
-  fecha: number; // UNIX timestamp
+  fecha: number;
   comentario: string | null;
 }
