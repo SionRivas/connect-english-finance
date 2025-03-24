@@ -3,11 +3,17 @@ import { redirect } from 'next/navigation';
 import { validateRequest } from '@/lib/auth';
 import { Curso, getActiveCursos } from '@/lib/db';
 import PanelAlumnos from '@/components/Alumnos/PanelAlumnosGen';
+import { cookies } from 'next/headers';
 
 export default async function AlumnosPage() {
   const { user } = await validateRequest();
   if (!user) {
     return redirect('/');
+  }
+
+  const passwordPending = (await cookies()).get('password_pending')?.value;
+  if (passwordPending === 'true') {
+    return redirect('/logout'); // Redirigir al apartado de verificación
   }
   const CursosActivos = JSON.stringify(await getActiveCursos());
   return (

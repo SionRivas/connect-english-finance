@@ -12,6 +12,42 @@ export const getUsersWithIdAndUsername = async () => {
   }
 };
 
+export const changeUserPassword = async (
+  userId: string,
+  newPassword: string,
+) => {
+  try {
+    await db.execute({
+      sql: `UPDATE user 
+        SET password = :newPassword 
+        WHERE id = :userId`,
+      args: {
+        userId: userId,
+        newPassword: newPassword,
+      },
+    });
+    return true;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const getUserById = async (id: string) => {
+  try {
+    const user = (
+      await db.execute({
+        sql: `SELECT * FROM user WHERE id = :id`,
+        args: {
+          id: id,
+        },
+      })
+    ).rows[0] as unknown as DatabaseUser | undefined;
+    return user;
+  } catch (e) {
+    return e;
+  }
+};
+
 export const db = createClient({
   url: process.env.TURSO_DATABASE_URL ?? '',
   authToken: process.env.TURSO_AUTH_TOKEN ?? '',
@@ -23,19 +59,21 @@ export const createUser = async (
   email: string,
   github_id: string | null = null,
   google_id: string | null = null,
+  password: string,
 ) => {
   try {
     await db.execute({
       sql: `INSERT INTO user 
-        (id, username, email, github_id, google_id)
+        (id, username, email, github_id, google_id, password)
         VALUES
-        (:userId, :username, :email, :github_id, :google_id)`,
+        (:userId, :username, :email, :github_id, :google_id, :password)`,
       args: {
         userId: id,
         username: username,
         email: email,
         github_id: github_id,
         google_id: google_id,
+        password: password,
       },
     });
     return true;

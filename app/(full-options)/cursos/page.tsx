@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { validateRequest } from '@/lib/auth';
 import { getCursosCount } from '@/lib/db';
 import TableCursos from '@/components/Cursos/TableCursos';
+import { cookies } from 'next/headers';
 
 export default async function CursosPage() {
   const { user } = await validateRequest();
@@ -10,6 +11,10 @@ export default async function CursosPage() {
     return redirect('/');
   }
 
+  const passwordPending = (await cookies()).get('password_pending')?.value;
+  if (passwordPending === 'true') {
+    return redirect('/logout'); // Redirigir al apartado de verificación
+  }
   const cursosCount = (await getCursosCount()) as number;
   return (
     <div className="flex w-full max-w-5xl flex-col gap-5">

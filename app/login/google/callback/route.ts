@@ -35,7 +35,6 @@ export async function GET(request: Request): Promise<Response> {
 
   try {
     const tokens = await google.validateAuthorizationCode(code, codeVerifier);
-    console.log('llego0');
     const googleUserResponse = await fetch(
       'https://www.googleapis.com/oauth2/v3/userinfo',
       {
@@ -56,17 +55,24 @@ export async function GET(request: Request): Promise<Response> {
         sessionCookie.value,
         sessionCookie.attributes,
       );
+
+      if (existingUser.password) {
+        (await cookies()).set('password_pending', 'true', {
+          httpOnly: true,
+          path: '/',
+          maxAge: 60 * 60, // 1 hora
+        });
+      }
+
       return new Response(null, {
         status: 302,
         headers: {
-          Location: '/',
+          Location: '/verificacion', // Redirigir a la página de confirmación
         },
       });
     }
 
     const userId = generateIdFromEntropySize(10); // 16 characters long
-
-    // Replace this with your own DB client.
 
     await createUser(
       userId,
@@ -74,6 +80,7 @@ export async function GET(request: Request): Promise<Response> {
       googleUser.email,
       null,
       googleUser.sub,
+      'connect',
     );
 
     const session = await lucia.createSession(userId, {});
@@ -83,16 +90,21 @@ export async function GET(request: Request): Promise<Response> {
       sessionCookie.value,
       sessionCookie.attributes,
     );
+
+    (await cookies()).set('password_pending', 'true', {
+      httpOnly: true,
+      path: '/',
+      maxAge: 60 * 60, // 1 hora
+    });
+
     return new Response(null, {
       status: 302,
       headers: {
-        Location: '/',
+        Location: '/verificacion', // Redirigir a la página de confirmación
       },
     });
   } catch (e) {
-    // the specific error message depends on the provider
     if (e instanceof OAuth2RequestError) {
-      // invalid code
       return new Response(null, {
         status: 400,
       });
