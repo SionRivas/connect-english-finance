@@ -53,7 +53,14 @@ export async function GET(request: Request): Promise<Response> {
 
     // Replace this with your own DB client.
 
-    await createUser(userId, githubUser.login, '', githubUser.id, null);
+    await createUser(
+      userId,
+      githubUser.login,
+      '',
+      githubUser.id,
+      null,
+      'connect',
+    );
 
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);

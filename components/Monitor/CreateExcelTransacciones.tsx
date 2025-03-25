@@ -30,6 +30,8 @@ export const CreateExcelTransacciones: React.FC<
     { label: 'Fecha', value: 'fecha' },
     { label: 'Asociado', value: 'asociado' },
     { label: 'Comentario', value: 'comentario' },
+    { label: 'Metodo de Pago', value: 'metodo_pago' },
+    { label: 'Recibo', value: 'n_recibo' },
   ];
 
   const selectedValues = useRef<string[]>(

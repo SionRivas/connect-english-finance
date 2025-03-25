@@ -68,76 +68,78 @@ export async function GET(request: Request): Promise<Response> {
       endDateTimestamp,
     )) as Transaccion[];
 
+    // Aplicamos el filtro según los campos solicitados.
     const filteredTransacciones = transacciones.map((tx) =>
       filterTransaccion(tx, fields),
     );
 
-    const columns: string[] =
-      filteredTransacciones.length > 0
-        ? fields.length > 0
-          ? fields
-          : Object.keys(filteredTransacciones[0])
-        : [];
+    // Orden fijo de columnas requerido:
+    // 1-id, 2-fecha, 3-asociado, 4-categoria, 5-monto,
+    // 6-metodo_pago, 7-n_recibo, 8-comentario, 9-tipo
+    const columns: string[] = [
+      'id',
+      'fecha',
+      'asociado',
+      'categoria',
+      'monto',
+      'metodo_pago',
+      'n_recibo',
+      'comentario',
+      'tipo',
+    ];
 
     const wb = new xl.Workbook();
     const ws = wb.addWorksheet('Transacciones');
 
-    // Estilos personalizados con tonos azules
-    const titleStyle = wb.createStyle({
-      font: { bold: true, size: 16, color: 'FFFFFF' },
-      alignment: { horizontal: 'center', vertical: 'center' },
-      fill: { type: 'pattern', patternType: 'solid', fgColor: '#4F81BD' },
-    });
-
-    const subtitleStyle = wb.createStyle({
-      font: { bold: true, size: 14, color: '000000' },
-      alignment: { horizontal: 'center', vertical: 'center' },
-    });
-
-    const dateStyle = wb.createStyle({
-      font: { italic: true, color: '000000' },
-      alignment: { horizontal: 'center', vertical: 'center' },
-    });
-
+    // Estilos personalizados
     const headerStyle = wb.createStyle({
       font: { bold: true, color: 'FFFFFF' },
       fill: { type: 'pattern', patternType: 'solid', fgColor: '#4F81BD' },
-
       alignment: { horizontal: 'center', vertical: 'center' },
       border: { left: 'thin', right: 'thin', top: 'thin', bottom: 'thin' },
     });
 
-    // Data style para celdas generales (texto en negro)
     const dataStyle = wb.createStyle({
       font: { color: '000000' },
       alignment: { horizontal: 'center', vertical: 'center' },
       border: { left: 'thin', right: 'thin', top: 'thin', bottom: 'thin' },
     });
 
-    // Estilo para la celda "comentario": alinear a la izquierda y activar wrapText
     const comentarioStyle = wb.createStyle({
       font: { color: '000000' },
       alignment: { horizontal: 'left', vertical: 'center', wrapText: true },
       border: { left: 'thin', right: 'thin', top: 'thin', bottom: 'thin' },
     });
 
-    const summaryStyle = wb.createStyle({
-      font: { bold: true, color: 'FFFFFF' },
-      fill: { type: 'pattern', patternType: 'solid', fgColor: '#4F81BD' },
-
+    // Estilos para "tipo": verde para Ingreso, rojo para Egreso
+    const tipoIngresoStyle = wb.createStyle({
+      font: { color: 'FFFFFF' },
+      fill: { type: 'pattern', patternType: 'solid', fgColor: '#28A745' },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: { left: 'thin', right: 'thin', top: 'thin', bottom: 'thin' },
+    });
+    const tipoEgresoStyle = wb.createStyle({
+      font: { color: 'FFFFFF' },
+      fill: { type: 'pattern', patternType: 'solid', fgColor: '#DC3545' },
       alignment: { horizontal: 'center', vertical: 'center' },
       border: { left: 'thin', right: 'thin', top: 'thin', bottom: 'thin' },
     });
 
-    // Encabezados decorativos
+    // Estilo para el resumen (footer)
+    const summaryStyle = wb.createStyle({
+      font: { bold: true, color: 'FFFFFF' },
+      fill: { type: 'pattern', patternType: 'solid', fgColor: '#4F81BD' },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: { left: 'thin', right: 'thin', top: 'thin', bottom: 'thin' },
+    });
+
+    // Encabezados decorativos (Footer y cabecera del reporte)
     ws.cell(1, 1, 1, columns.length, true)
       .string('Connect English')
-      .style(titleStyle);
-
+      .style(headerStyle);
     ws.cell(2, 1, 2, columns.length, true)
       .string('Resumen Financiero')
-      .style(subtitleStyle);
-
+      .style(headerStyle);
     const startDateFormatted = new Date(
       startDateTimestamp,
     ).toLocaleDateString();
@@ -146,27 +148,30 @@ export async function GET(request: Request): Promise<Response> {
     ).toLocaleDateString();
     ws.cell(3, 1, 3, columns.length, true)
       .string(`Período: ${startDateFormatted} - ${endDateFormatted}`)
-      .style(dateStyle);
+      .style(dataStyle);
 
-    // Encabezados de tabla
+    // Encabezados de tabla (fila 4)
     columns.forEach((col, i) => {
       ws.cell(4, i + 1)
         .string(col)
         .style(headerStyle);
     });
 
-    // Datos
+    // Datos a partir de fila 5
     filteredTransacciones.forEach((row, rowIndex) => {
       columns.forEach((col, colIndex) => {
         const cell = ws.cell(rowIndex + 5, colIndex + 1);
         let value = row[col];
+
         if (col === 'fecha' && value) {
           value = new Date(value).toLocaleDateString();
           cell.string(String(value)).style(dataStyle);
         } else if (col === 'tipo' && value) {
+          // Para el campo "tipo": 1 = Ingreso, 2 = Egreso
           const tipoText =
             value === 1 ? 'Ingreso' : value === 2 ? 'Egreso' : 'Desconocido';
-          cell.string(tipoText).style(dataStyle);
+          const style = value === 1 ? tipoIngresoStyle : tipoEgresoStyle;
+          cell.string(tipoText).style(style);
         } else if (col === 'comentario') {
           cell.string(value ? String(value) : '').style(comentarioStyle);
         } else if (typeof value === 'number') {
@@ -177,33 +182,6 @@ export async function GET(request: Request): Promise<Response> {
       });
     });
 
-    // Resumen financiero
-    let totalIngresos = 0;
-    let totalEgresos = 0;
-    transacciones.forEach((tx) => {
-      if (tx.tipo === 1) totalIngresos += tx.monto || 0;
-      if (tx.tipo === 2) totalEgresos += tx.monto || 0;
-    });
-    const summaryRow = filteredTransacciones.length + 5;
-    [
-      ['Total Ingresos', totalIngresos],
-      ['Total Egresos', totalEgresos],
-      ['Neto', totalIngresos - totalEgresos],
-    ].forEach(([label, value], i) => {
-      ws.cell(
-        summaryRow + i + 1,
-        1,
-        summaryRow + i + 1,
-        columns.length - 1,
-        true,
-      )
-        .string(label)
-        .style(summaryStyle);
-      ws.cell(summaryRow + i + 1, columns.length)
-        .number(value)
-        .style(summaryStyle);
-    });
-
     // Autoajuste de columnas
     columns.forEach((col, index) => {
       let maxLength = col.length;
@@ -212,6 +190,37 @@ export async function GET(request: Request): Promise<Response> {
         if (len > maxLength) maxLength = len;
       });
       ws.column(index + 1).setWidth(Math.min(maxLength + 5, 30));
+    });
+
+    // Resumen financiero en el footer: total ingresos, total egresos y neto.
+    // Se calculan sobre todas las transacciones (no solo las filtradas)
+    let totalIngresos = 0;
+    let totalEgresos = 0;
+    transacciones.forEach((tx) => {
+      if (tx.tipo === 1) totalIngresos += tx.monto || 0;
+      if (tx.tipo === 2) totalEgresos += tx.monto || 0;
+    });
+    const neto = totalIngresos - totalEgresos;
+    const summaryRows = [
+      ['Total Ingresos', totalIngresos],
+      ['Total Egresos', totalEgresos],
+      ['Neto', neto],
+    ];
+    // La fila donde finalizan los datos:
+    const startSummaryRow = filteredTransacciones.length + 5;
+    summaryRows.forEach(([label, value], i) => {
+      ws.cell(
+        startSummaryRow + i,
+        1,
+        startSummaryRow + i,
+        columns.length - 1,
+        true,
+      )
+        .string(String(label))
+        .style(summaryStyle);
+      ws.cell(startSummaryRow + i, columns.length)
+        .number(Number(value))
+        .style(summaryStyle);
     });
 
     const buffer = await wb.writeToBuffer();
