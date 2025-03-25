@@ -72,7 +72,7 @@ export const CambiarPassword = ({ nombre }: CambiarPasswordProps) => {
             <Input
               required
               label="Contraseña actual"
-              type="pa"
+              type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
             />

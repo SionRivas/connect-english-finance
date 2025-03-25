@@ -88,9 +88,9 @@ export const Navbar = ({ username }: NavbarProps) => {
           <ThemeSwitch />
           <div className="flex flex-col items-end">
             <span className="font-bold text-inherit">Bienvendio</span>
-            <span className="text-xs text-success-500 dark:text-red-700">
+            <a href="/cambiarPassword" className="text-xs text-success-500">
               {username}
-            </span>
+            </a>
           </div>
           <LogoutButton />
         </NavbarItem>
