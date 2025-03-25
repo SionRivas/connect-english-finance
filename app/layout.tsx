@@ -48,7 +48,6 @@ export default function RootLayout({
 
             {children}
           </Providers>
-          <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
         </body>
       </html>
     </ViewTransitions>
