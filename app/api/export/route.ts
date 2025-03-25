@@ -3,6 +3,8 @@ import {
   type Transaccion as OriginalTransaccion,
 } from '@/lib/db';
 
+import { Categorias, MetodosPago } from '@/lib/constantes';
+
 interface Transaccion extends OriginalTransaccion {
   [key: string]: any;
 }
@@ -68,15 +70,13 @@ export async function GET(request: Request): Promise<Response> {
       endDateTimestamp,
     )) as Transaccion[];
 
-    // Aplicamos el filtro según los campos solicitados.
+    // Filtramos cada transacción según los campos solicitados.
     const filteredTransacciones = transacciones.map((tx) =>
       filterTransaccion(tx, fields),
     );
 
-    // Orden fijo de columnas requerido:
-    // 1-id, 2-fecha, 3-asociado, 4-categoria, 5-monto,
-    // 6-metodo_pago, 7-n_recibo, 8-comentario, 9-tipo
-    const columns: string[] = [
+    // Arreglo de columnas por defecto en el orden requerido.
+    const defaultColumns: string[] = [
       'id',
       'fecha',
       'asociado',
@@ -87,6 +87,12 @@ export async function GET(request: Request): Promise<Response> {
       'comentario',
       'tipo',
     ];
+    // Si se pasaron campos en la query, se utiliza la intersección con defaultColumns;
+    // en caso contrario se muestran todas.
+    const columns: string[] =
+      fields.length > 0
+        ? defaultColumns.filter((col) => fields.includes(col))
+        : defaultColumns;
 
     const wb = new xl.Workbook();
     const ws = wb.addWorksheet('Transacciones');
@@ -133,7 +139,7 @@ export async function GET(request: Request): Promise<Response> {
       border: { left: 'thin', right: 'thin', top: 'thin', bottom: 'thin' },
     });
 
-    // Encabezados decorativos (Footer y cabecera del reporte)
+    // Encabezados decorativos (cabecera del reporte)
     ws.cell(1, 1, 1, columns.length, true)
       .string('Connect English')
       .style(headerStyle);
@@ -167,11 +173,16 @@ export async function GET(request: Request): Promise<Response> {
           value = new Date(value).toLocaleDateString();
           cell.string(String(value)).style(dataStyle);
         } else if (col === 'tipo' && value) {
-          // Para el campo "tipo": 1 = Ingreso, 2 = Egreso
           const tipoText =
             value === 1 ? 'Ingreso' : value === 2 ? 'Egreso' : 'Desconocido';
           const style = value === 1 ? tipoIngresoStyle : tipoEgresoStyle;
           cell.string(tipoText).style(style);
+        } else if (col === 'categoria') {
+          const categoria = Categorias.find((c) => c.id === value);
+          cell.string(categoria ? categoria.nombre : '').style(dataStyle);
+        } else if (col === 'metodo_pago') {
+          const metodoPago = MetodosPago.find((m) => m.id === value);
+          cell.string(metodoPago ? metodoPago.nombre : '').style(dataStyle);
         } else if (col === 'comentario') {
           cell.string(value ? String(value) : '').style(comentarioStyle);
         } else if (typeof value === 'number') {
@@ -193,7 +204,6 @@ export async function GET(request: Request): Promise<Response> {
     });
 
     // Resumen financiero en el footer: total ingresos, total egresos y neto.
-    // Se calculan sobre todas las transacciones (no solo las filtradas)
     let totalIngresos = 0;
     let totalEgresos = 0;
     transacciones.forEach((tx) => {
