@@ -1,11 +1,12 @@
 # 📚 Connect English Finance
-
-Sistema de gestión administrativa para escuelas de inglés. Permite llevar un control completo de alumnos, cursos y transacciones financieras de manera eficiente e intuitiva.
-
-![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
+![Fecha](https://img.shields.io/badge/Fecha-Enero%202025-cian)
+![Next.js](https://img.shields.io/badge/Next.js-15-white?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript)
 ![HeroUI](https://img.shields.io/badge/HeroUI-2.6-purple)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwind-css)
+
+Sistema de gestión administrativa para escuelas de inglés. Permite llevar un control completo de alumnos, cursos y transacciones financieras de manera eficiente e intuitiva.
+
 
 ## ✨ Características Principales
 
